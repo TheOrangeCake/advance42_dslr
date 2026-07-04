@@ -31,6 +31,7 @@ def is_numeric_column(values: list[str]) -> bool:
         try:
             float(v)
         except ValueError:
+            # logging.warning(f"NaN detected: {v}, skipped column")
             return False
     return has_value
 

@@ -10,3 +10,5 @@ class Feature():
     half: float
     three_quarter: float
     max: float
+    range: float
+    nan: float

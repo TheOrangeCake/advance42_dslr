@@ -11,7 +11,9 @@ display_name = {
     'quarter': '25%',
     'half': '50%',
     'three_quarter': '75%',
-    'max': 'Max'
+    'max': 'Max',
+    'range': 'Range',
+    'nan': 'NaN'
 }
 
 
