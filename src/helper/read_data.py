@@ -5,25 +5,16 @@ import coloredlogs
 
 coloredlogs.install()
 
-fields = [
-    "Index", "Hogwarts House", "First Name",
-    "Last Name", "Birthday", "Best Hand",
-    "Arithmancy", "Astronomy", "Herbology",
-    "Defense Against the Dark Arts", "Divination",
-    "Muggle Studies", "Ancient Runes", "History of Magic",
-    "Transfiguration", "Potions", "Care of Magical Creatures",
-    "Charms", "Flying"
-]
-
 
 def read_dataset(data_train: str) -> dict[str, list[str]]:
     try:
         with open(data_train, mode='r') as file:
             reader = csv.DictReader(file)
+            fields = reader.fieldnames or []
             columns = {name: [] for name in fields}
             for row in reader:
                 for name in fields:
-                    data = row[name].strip()
+                    data = (row[name] or '').strip()
                     columns[name].append(data)
         return columns
     except IOError as ioe:
@@ -31,20 +22,25 @@ def read_dataset(data_train: str) -> dict[str, list[str]]:
         sys.exit(-1)
 
 
-numeric_fields = [
-    "Arithmancy", "Astronomy", "Herbology",
-    "Defense Against the Dark Arts", "Divination", "Muggle Studies",
-    "Ancient Runes", "History of Magic", "Transfiguration",
-    "Potions", "Care of Magical Creatures", "Charms", "Flying",
-]
+def is_numeric_column(values: list[str]) -> bool:
+    has_value = False
+    for v in values:
+        if v == '':
+            continue
+        has_value = True
+        try:
+            float(v)
+        except ValueError:
+            return False
+    return has_value
 
 
 def only_numeric(data: dict[str, list[str]]) -> dict[str, list[float]]:
     result = {}
-    for name in numeric_fields:
-        result[name] = []
-        for v in data[name]:
-            if v == '':
-                continue
-            result[name].append(float(v))
+    for name, values in data.items():
+        if name.lower() == 'index':
+            continue
+        if not is_numeric_column(values):
+            continue
+        result[name] = [float(v) for v in values if v != '']
     return result
