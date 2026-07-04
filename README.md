@@ -5,13 +5,17 @@
 ```sh
 	python3 -m venv venv
 	source venv/bin/activate
-	pip install -r requirements.txt //inside (venv)
+	pip install -r requirements.txt
 ```
-- To update dependency list for vevn:
+- Update dependency list for venv:
 ```sh
 	pip freeze > requirements.txt
 ```
-- To lint:
+- Lint:
 ```sh
 	flake8 src
+```
+- Venv:
+```sh
+	source venv/bin/activate
 ```

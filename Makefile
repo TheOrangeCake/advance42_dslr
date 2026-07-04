@@ -1,26 +1,31 @@
 DESCRIBE = describe
 VISUALIZATION = visualization
-MODEL =
+MODEL = model
 
-DATA_TEST = src/datasets/datasets_test.csv
+DATA_TEST = src/datasets/dataset_test.csv
 DATA_TRAIN = src/datasets/dataset_train.csv
+DATA_DUMMY = src/datasets/dummy.csv
 
-all: describe flake
+PYTHON = venv/bin/python3
+PIP = venv/bin/pip
+FLAKE = venv/bin/flake8
+
+all: describe
 
 describe:
-	python3 src/describe/describe.py $(DATA_TRAIN)
-
-venv:
-	python3 -m venv venv
-	source venv/bin/activate
-
-install:
-	python3 -m venv venv
-	source venv/bin/activate
-	pip install -r requirements.txt
+	$(PYTHON) src/describe/describe.py $(DATA_TRAIN)
 
 require:
-	pip freeze > requirements.txt
+	$(PIP) freeze > requirements.txt
+
+install:
+	$(PYTHON) -m venv venv
+	$(PIP) install -r requirements.txt
 
 flake:
-	flake8 src
+	$(FLAKE) src
+
+dummy:
+	$(PYTHON) src/describe/describe.py $(DATA_DUMMY)
+
+.PHONY: all describe require install flake dummy
