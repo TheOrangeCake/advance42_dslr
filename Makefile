@@ -1,7 +1,3 @@
-DESCRIBE = describe
-VISUALIZATION = visualization
-MODEL = model
-
 DATA_TEST = src/datasets/dataset_test.csv
 DATA_TRAIN = src/datasets/dataset_train.csv
 DATA_DUMMY = src/datasets/dummy.csv
@@ -11,10 +7,13 @@ PYTHON = venv/bin/python3
 PIP = venv/bin/pip
 FLAKE = venv/bin/flake8
 
-all: describe
+all: describe histogram
 
 describe:
 	$(PYTHON) src/describe/describe.py $(DATA_TRAIN)
+
+histogram:
+	$(PYTHON) src/visualization/histogram.py $(DATA_TRAIN)
 
 require:
 	$(PIP) freeze > requirements.txt
@@ -32,4 +31,4 @@ dummy:
 dummy2:
 	$(PYTHON) src/describe/describe.py $(DATA_DUMMY_2)
 
-.PHONY: all describe require install flake dummy
+.PHONY: all describe histogram require install flake dummy
