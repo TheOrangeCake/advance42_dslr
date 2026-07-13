@@ -1,3 +1,0 @@
-# Graphs
-
-Contain exported graphs
