@@ -7,13 +7,16 @@ PYTHON = venv/bin/python3
 PIP = venv/bin/pip
 FLAKE = venv/bin/flake8
 
-all: describe histogram
+all: describe histogram scatter
 
 describe:
 	$(PYTHON) src/describe/describe.py $(DATA_TRAIN)
 
 histogram:
 	$(PYTHON) src/visualization/histogram.py $(DATA_TRAIN)
+	
+scatter:
+	$(PYTHON) src/visualization/scatter.py $(DATA_TRAIN)
 
 require:
 	$(PIP) freeze > requirements.txt
@@ -31,4 +34,4 @@ dummy:
 dummy2:
 	$(PYTHON) src/describe/describe.py $(DATA_DUMMY_2)
 
-.PHONY: all describe histogram require install flake dummy
+.PHONY: all describe histogram scatter require install flake dummy

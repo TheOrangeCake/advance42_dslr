@@ -26,7 +26,7 @@ def histogram() -> None:
         logging.critical('Usage: ./histogram [Dataset path]')
         return
     else:
-        logging.info(f"Dataset source: {sys.argv[1]}")
+        logging.info(f"Histogram Dataset source: {sys.argv[1]}")
 
     data = read_dataset(sys.argv[1])
     house_col = data.get("Hogwarts House")
@@ -55,6 +55,11 @@ def histogram() -> None:
     handles, labels = graph.gca().get_legend_handles_labels()
     graph.figlegend(handles, labels, loc='lower right')
     graph.tight_layout()
+    out_dir = Path(__file__).resolve().parents[2] / "plots" / "histogram"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_path = out_dir / "histogram.png"
+    graph.savefig(out_path, dpi=150)
+    logging.info(f"Saved plot to {out_path}")
     graph.show()
     # Conclusion:
     # Which Hogwarts course has a homogeneous score
