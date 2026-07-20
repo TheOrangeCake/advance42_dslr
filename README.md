@@ -19,3 +19,6 @@
 ```sh
 	source venv/bin/activate
 ```
+
+## Resources
+- [Logistic regression](https://www.geeksforgeeks.org/machine-learning/understanding-logistic-regression/)
