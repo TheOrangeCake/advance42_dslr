@@ -6,6 +6,7 @@ from pathlib import Path
 import coloredlogs
 sys.path.append(str(Path(__file__).parent.parent))
 from helper.read_data import read_dataset  # noqa: E402
+from helper.plot import save_fig  # noqa: E402
 
 coloredlogs.install()
 
@@ -54,17 +55,12 @@ def histogram() -> None:
         graph.title(name)
     handles, labels = graph.gca().get_legend_handles_labels()
     graph.figlegend(handles, labels, loc='lower right')
-    graph.tight_layout()
-    out_dir = Path(__file__).resolve().parents[2] / "plots" / "histogram"
-    out_dir.mkdir(parents=True, exist_ok=True)
-    out_path = out_dir / "histogram.png"
-    graph.savefig(out_path, dpi=150)
-    logging.info(f"Saved plot to {out_path}")
+    save_fig("histogram", "histogram.png")
     graph.show()
     # Conclusion:
-    # Which Hogwarts course has a homogeneous score
-    # distribution between all four houses?
-    # Arithmancy and Care of Magical Creatures
+    # Q: Which Hogwarts course has a homogeneous score
+    #    distribution between all four houses?
+    # A: Arithmancy and Care of Magical Creatures
 
 
 if __name__ == "__main__":

@@ -4,7 +4,6 @@ import sys
 import logging
 from pathlib import Path
 import coloredlogs
-import numpy
 sys.path.append(str(Path(__file__).parent.parent))
 from helper.read_data import read_dataset  # noqa: E402
 
@@ -41,7 +40,8 @@ def train() -> None:
     # 13 - - - - Loop each feature
     # 14 - - - - - Update the weights (thetas) based on error
     # 15 - - - - Update bias
-    # 15 - Write set data (weights, bias) and feature data (min, max) to a file for classification later 
+    # 15 - Write set data (weights, bias) and feature data (min, max) to a file for classification later
+    # 16 - Draw training history graph to validate the training (theta converge)
 
 
 if __name__ == "__main__":

@@ -6,6 +6,7 @@ from pathlib import Path
 import coloredlogs
 sys.path.append(str(Path(__file__).parent.parent))
 from helper.read_data import read_dataset  # noqa: E402
+from helper.plot import save_fig  # noqa: E402
 
 coloredlogs.install()
 
@@ -22,9 +23,6 @@ def scatter() -> None:
         logging.info(f"Scatter Dataset source: {sys.argv[1]}")
 
     data = read_dataset(sys.argv[1])
-
-    out_dir = Path(__file__).resolve().parents[2] / "plots" / "scatter"
-    out_dir.mkdir(parents=True, exist_ok=True)
 
     per_fig = 9
     count = 0
@@ -45,18 +43,15 @@ def scatter() -> None:
             graph.ylabel(b)
             count += 1
             if (count % per_fig == 0):
-                graph.tight_layout()
-                graph.savefig(out_dir / f"scatter_{fig_num}.png", dpi=150)
+                save_fig("scatter", f"scatter_{fig_num}.png")
                 graph.close()
                 fig_num += 1
                 graph.figure()
     if count % per_fig != 0:
-        graph.tight_layout()
-        graph.savefig(out_dir / f"scatter_{fig_num}.png", dpi=150)
+        save_fig("scatter", f"scatter_{fig_num}.png")
         graph.close()
-    logging.info(f"Saved {fig_num} plot(s) to {out_dir}")
 
-    print_similar(data, 'Astronomy', 'Defense Against the Dark Arts', out_dir)
+    print_similar(data, 'Astronomy', 'Defense Against the Dark Arts')
     # Conclusion:
     # What are the two features that are similar?
     # Astronomy and Defense Against the Dark Arts
@@ -76,7 +71,7 @@ def build_axes(data, a, b):
 
 
 # hardcode af
-def print_similar(data, a, b, out_dir):
+def print_similar(data, a, b):
     logging.info(f"The two most similar features are: {a} and {b}")
     x, y = build_axes(data, a, b)
     graph.figure()
@@ -84,8 +79,7 @@ def print_similar(data, a, b, out_dir):
     graph.title(f'{a} vs {b}')
     graph.xlabel(a)
     graph.ylabel(b)
-    graph.tight_layout()
-    graph.savefig(out_dir / "similar.png", dpi=150)
+    save_fig("scatter", "similar.png")
     graph.show()
 
 
