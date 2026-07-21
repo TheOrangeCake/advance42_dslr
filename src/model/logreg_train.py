@@ -2,6 +2,7 @@
 import matplotlib.pyplot as graph
 import sys
 import logging
+import math
 from pathlib import Path
 import coloredlogs
 sys.path.append(str(Path(__file__).parent.parent))
@@ -61,6 +62,19 @@ def train() -> None:
     # 16 - - - - Update bias
     # 17 - Write set data (weights, bias) and feature data (min, max) to a file for classification later
     # 18 - Draw training history graph to validate the training (theta converge)
+
+# def stochastic(
+#         rows: list[tuple[str, dict[str, float]]],
+#         features: list[str],
+#         houses: dict[str, dict[]]
+#         ) -> :
+
+
+# https://www.w3schools.com/python/ref_math_exp.asp
+# Used to map any real-valued number into a value between 0 and 1
+# The parameter x should be normalized to be between -1 and 1
+def sigmoid(x: float) -> float:
+    return 1 / (1 + math.exp(-x))
 
 
 # Calculate min and max for normalize
