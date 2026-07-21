@@ -35,6 +35,7 @@ def train() -> None:
     
     min_max = cal_min_max(features, data)
     normalized = normalize(features, data, min_max)
+    rows = convert_to_rows(features, data, normalized)
 
     # for _ in range(EPOCHS):
     #     for house in HOUSES:
@@ -48,17 +49,18 @@ def train() -> None:
     #  4 - [OK] Define number of epochs
     #  5 - [OK] Go through the dataset to get the min and max
     #  6 - [OK] Normalize the data, if data is empty, put 0.5
-    #  7 - [OK]Loop each epochs
-    #  8 - - [OK] Loop each house
-    #  9 - - - Loop each student
-    # 10 - - - - Store the correct result: Same house 1, other house 0
-    # 11 - - - - Predict student house (sigmoid and etc. TBD)
-    # 12 - - - - Calculate error: correct result - prediction
-    # 13 - - - - Loop each feature
-    # 14 - - - - - Update the weights (thetas) based on error
-    # 15 - - - - Update bias
-    # 15 - Write set data (weights, bias) and feature data (min, max) to a file for classification later
-    # 16 - Draw training history graph to validate the training (theta converge)
+    #  7 - [OK] Convert column based data to row based data
+    #  8 - [OK]Loop each epochs
+    #  9 - - [OK] Loop each house
+    # 10 - - - Loop each student
+    # 11 - - - - Store the correct result: Same house 1, other house 0
+    # 12 - - - - Predict student house (sigmoid and etc. TBD)
+    # 13 - - - - Calculate error: correct result - prediction
+    # 14 - - - - Loop each feature
+    # 15 - - - - - Update the weights (thetas) based on error
+    # 16 - - - - Update bias
+    # 17 - Write set data (weights, bias) and feature data (min, max) to a file for classification later
+    # 18 - Draw training history graph to validate the training (theta converge)
 
 
 # Calculate min and max for normalize
@@ -91,6 +93,25 @@ def normalize(
                 column.append((float(v) - low) / span)
         normalized[name] = column
     return normalized
+
+
+# Convert column based read dataset to row based
+def convert_to_rows(
+        features: list[str],
+        data: dict[str, list[str]],
+        normalized: dict[str, list[float]]
+        ) -> list[tuple[str, dict[str, float]]]:
+    rows = []
+    houses = data.get("Hogwarts House")
+    if not houses:
+        logging.critical('Missing or empty "Hogwarts House" column')
+        sys.exit(-1)
+    for i in range(len(houses)):
+        values = {}
+        for feature in features:
+            values[feature] = normalized[feature][i]
+        rows.append((houses[i], values))
+    return rows
 
 
 if __name__ == "__main__":
