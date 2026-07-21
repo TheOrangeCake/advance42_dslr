@@ -11,7 +11,7 @@ from helper.plot import save_fig  # noqa: E402
 coloredlogs.install()
 
 
-skip = ["Index", "Hogwarts House", "First Name",
+SKIP = ["Index", "Hogwarts House", "First Name",
         "Last Name", "Birthday", "Best Hand"]
 
 
@@ -27,7 +27,7 @@ def scatter() -> None:
     per_fig = 9
     count = 0
     fig_num = 1
-    features = [name for name in data if name not in skip]
+    features = [name for name in data if name not in SKIP]
     for i in range(len(features)):
         for j in range(i + 1, len(features)):
             a = features[i]
