@@ -3,39 +3,55 @@ import matplotlib.pyplot as graph
 import sys
 import logging
 import math
+import csv
 from pathlib import Path
 import coloredlogs
 sys.path.append(str(Path(__file__).parent.parent))
 from helper.read_data import read_dataset  # noqa: E402
+from helper.plot import save_fig  # noqa: E402
 from describe.min_max_perc import cal_min, cal_max  # noqa: E402
 
 coloredlogs.install()
 
-# Steps:
+# Pseudo code:
 #  1 - [OK] Define a learning rate / step so training can be faster
 #  2 - [OK] Define number of epochs
-#  3 - [OK] Go through the dataset to get the min and max
-#  4 - [OK] Normalize the data, if data is empty, put 0.5
-#  5 - [OK] Convert column based data to row based data
-#  6 - [OK] Initialize a set of weights (1 per feature) per house
-#  7 - [OK]Loop each epochs
-#  8 - - [OK] Loop each house
-#  9 - - - Loop each student
-# 10 - - - - Store the correct result: Same house 1, other house 0
-# 11 - - - - Predict student house (sigmoid and etc. TBD)
-# 12 - - - - Calculate error: correct result - prediction
-# 13 - - - - Loop each feature
-# 14 - - - - - Update the weights (thetas) based on error
-# 15 - Write weights, min and max to a file for classification later
-# 16 - Draw training history graph to validate the training (θ converge)
+#  3 - [OK] Define batch size (for GD, mini-batch and stochastic)
+#  4 - [OK] Go through the dataset to get the min and max
+#  5 - [OK] Normalize the data, if data is empty, put 0.5
+#  6 - [OK] Convert column based data to row based data
+#  7 - [OK] Initialize a set of weights (1 per feature) per house
+#  8 - [OK] Create history variable to store cost during training
+#  9 - [OK]Loop each epochs
+# 10 - - [OK] Loop each house
+# 11 - - - [OK] Create fresh accumulator (Σ) for each house each epoch
+# 12 - - - [OK] Loop each student
+# 13 - - - - [OK] Store the correct result: Same house 1, other house 0
+# 14 - - - - [OK] Calculate the probability of same house
+# 15 - - - - [OK] Calculate error = predict - truth
+# 16 - - - - [OK] Accumulate the accumulator
+# 17 - - - [OK] Update the weights for current epoch usung sum of all student
+# 18 - - - [OK] Save training data for graph
+# 19 - [OK] Write weights, min and max to a file for classification later
+# 20 - [OK] Draw training history graph to validate the training (θ converge)
 
 HOUSES = ["Gryffindor", "Ravenclaw", "Hufflepuff", "Slytherin"]
 SKIP = ["Index", "Hogwarts House", "First Name",
         "Last Name", "Birthday", "Best Hand"]
+COLORS = {
+    "Gryffindor": "red",
+    "Ravenclaw":  "blue",
+    "Hufflepuff": "yellow",
+    "Slytherin":  "green",
+}
+WEIGHTS_PATH = Path(__file__).resolve().parents[2] / "weights.csv"
+
 #  1 - [OK] Define a learning rate / step so training can be faster
-STEP = 0.1
+STEP = 1.0
 #  2 - [OK] Define number of epochs
-EPOCHS = 1000
+EPOCHS = 500
+#  3 - [OK] Define batch size (for GD, mini-batch and stochastic)
+BATCH_SIZE = None
 
 
 def train() -> None:
@@ -49,20 +65,91 @@ def train() -> None:
 
     features = [name for name in data.keys() if name not in SKIP]
 
-    #  3 - [OK] Go through the dataset to get the min and max
+    #  4 - [OK] Go through the dataset to get the min and max
     min_max = cal_min_max(features, data)
-    #  4 - [OK] Normalize the data, if data is empty, put 0.5
+    #  5 - [OK] Normalize the data, if data is empty, put 0.5
     normalized = normalize(features, data, min_max)
-    # 5 - [OK] Convert column based data to row based data
+    # 6 - [OK] Convert column based data to row based data
     rows = convert_to_rows(features, data, normalized)
 
-    #  6 - [OK] Initialize a set of weights (1 per feature) per house
-    houses = {house: {name: 0.0 for name in features} for house in HOUSES}
+    #  7 - [OK] Initialize a set of weights (1 per feature) per house
+    house_w = {house: {name: 0.0 for name in features} for house in HOUSES}
 
-    # #  7 - [OK]Loop each epochs
-    # for _ in range(EPOCHS):
-    #     # 8 - [OK] Loop each house
-    #     for house in HOUSES:
+    #  8 - [OK] Create history variable to store cost during training
+    history = {house: [] for house in HOUSES}
+
+    #  9 - [OK]Loop each epochs
+    for i in range(EPOCHS):
+        logging.info(f"Epoch {i}")
+        # 10 - [OK] Loop each house
+        for house in HOUSES:
+            weights = house_w[house]
+            # 11 - [OK] Create fresh accumulator (Σ) for each house each epoch
+            gradient = {feature: 0.0 for feature in features}
+            # 12 - [OK] Loop each student
+            for label, values in rows:
+                # 13 - [OK] Store the truth: Same house 1, other house 0
+                y = 1.0 if label == house else 0.0
+                # 14 - [OK] Calculate the probability of same house
+                p = hypothesis(weights, values)
+                # 15 - [OK] Calculate error = predict - truth
+                error = p - y
+                # 16 - [OK] Accumulate the accumulator
+                for feature in features:
+                    gradient[feature] += error * values[feature]
+            # 17 - [OK] Update the weights for current epoch with accumulator
+            # This is the actualy Gradient Descent
+            for feature in features:
+                weights[feature] -= STEP * (gradient[feature] / len(rows))
+            # 18 - [OK] Save training data for graph
+            history[house].append(cost(rows, house, weights))
+
+    # 19 - [OK] Write weights, min and max to a file for classification later
+    save_weights(features, house_w, min_max)
+    # 20 - [OK] Draw training history graph to validate the training
+    draw_history(history)
+
+
+# Store data logreg_predict needs to classify student
+# Layout:
+# Key       | Arithmancy | Astronomy | ...
+# min       | -24370.0   | -966.74   | ...
+# max       | 104956.0   | 1016.21   | ...
+# Gryffindor| -0.110952  | -0.054301 | ...
+# ...
+def save_weights(
+        features: list[str],
+        house_w: dict[str, dict[str, float]],
+        min_max: dict[str, dict[str, float]]
+        ) -> None:
+    try:
+        with open(WEIGHTS_PATH, mode='w', newline='') as file:
+            writer = csv.DictWriter(file, fieldnames=["Key"] + features)
+            writer.writeheader()
+            for bound in ["min", "max"]:
+                row = {name: min_max[name][bound] for name in features}
+                writer.writerow({"Key": bound, **row})
+            for house in HOUSES:
+                writer.writerow({"Key": house, **house_w[house]})
+    except IOError as ioe:
+        logging.critical(f"Error writing trained data: {ioe}")
+        sys.exit(-1)
+    logging.info(f"Saved trained data to {WEIGHTS_PATH}")
+
+
+# Plot cost per epoch for each house, cost must go down and flatten out
+# A curve that rises means the step is too big or a sign is flipped,
+# a curve still falling at the last epoch means EPOCHS is too small.
+def draw_history(history: dict[str, list[float]]) -> None:
+    for house in HOUSES:
+        graph.plot(history[house], label=house, color=COLORS[house])
+    graph.title(f"Training history (step {STEP}, {EPOCHS} epochs)")
+    graph.xlabel("Epoch")
+    graph.ylabel("Cost J(θ)")
+    graph.legend()
+    graph.grid(alpha=0.3)
+    save_fig("model", "training_history.png")
+    graph.show()
 
 
 # Cost function:
@@ -82,6 +169,7 @@ def train() -> None:
 # Since log() is negative, - at the start mean to flip to positive,
 # this mean the smaller J is the better, best case is J = 0
 # A wall of explanation for 7 lines of code, yay math!
+# Now what this does? No idea, meh
 def cost(
         rows: list[tuple[str, dict[str, float]]],
         house: str,
