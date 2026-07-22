@@ -22,18 +22,19 @@ coloredlogs.install()
 #  6 - [OK] Convert column based data to row based data
 #  7 - [OK] Initialize a set of weights (1 per feature) per house
 #  8 - [OK] Create history variable to store cost during training
-#  9 - [OK]Loop each epochs
+#  9 - [OK] Loop each epochs
 # 10 - - [OK] Loop each house
-# 11 - - - [OK] Create fresh accumulator (Σ) for each house each epoch
-# 12 - - - [OK] Loop each student
-# 13 - - - - [OK] Store the correct result: Same house 1, other house 0
-# 14 - - - - [OK] Calculate the probability of same house
-# 15 - - - - [OK] Calculate error = predict - truth
-# 16 - - - - [OK] Accumulate the accumulator
-# 17 - - - [OK] Update the weights for current epoch usung sum of all student
-# 18 - - - [OK] Save training data for graph
-# 19 - [OK] Write weights, min and max to a file for classification later
-# 20 - [OK] Draw training history graph to validate the training (θ converge)
+# 11 - - - [OK] Loop each batch of students
+# 12 - - - - [OK] Create fresh accumulator (Σ) for each batch
+# 13 - - - - [OK] Loop each student in the batch
+# 14 - - - - - [OK] Store the correct result: Same house 1, other house 0
+# 15 - - - - - [OK] Calculate the probability of same house
+# 16 - - - - - [OK] Calculate error = predict - truth
+# 17 - - - - - [OK] Accumulate the accumulator
+# 18 - - - - [OK] Update the weights using the batch average
+# 19 - - - [OK] Save training data for graph
+# 20 - [OK] Write weights, min and max to a file for classification later
+# 21 - [OK] Draw training history graph to validate the training (θ converge)
 
 HOUSES = ["Gryffindor", "Ravenclaw", "Hufflepuff", "Slytherin"]
 SKIP = ["Index", "Hogwarts House", "First Name",
@@ -47,10 +48,13 @@ COLORS = {
 WEIGHTS_PATH = Path(__file__).resolve().parents[2] / "weights.csv"
 
 #  1 - [OK] Define a learning rate / step so training can be faster
-STEP = 1.0
+#      GD: 0.5; mini-batch: 0.5; SGD: 0.5;
+STEP = 0.5
 #  2 - [OK] Define number of epochs
-EPOCHS = 500
-#  3 - [OK] Define batch size (for GD, mini-batch and stochastic)
+#      GD: 1000; mini-batch: 200; SDG: 75;
+EPOCHS = 1000
+#  3 - [OK] Define batch size
+#      GD: None; mini-batch: 32; SGD: 1;
 BATCH_SIZE = None
 
 
@@ -72,41 +76,45 @@ def train() -> None:
     # 6 - [OK] Convert column based data to row based data
     rows = convert_to_rows(features, data, normalized)
 
+    size = min(BATCH_SIZE or len(rows), len(rows))
+
     #  7 - [OK] Initialize a set of weights (1 per feature) per house
     house_w = {house: {name: 0.0 for name in features} for house in HOUSES}
 
     #  8 - [OK] Create history variable to store cost during training
     history = {house: [] for house in HOUSES}
 
-    #  9 - [OK]Loop each epochs
+    #  9 - [OK] Loop each epochs
     for i in range(EPOCHS):
         logging.info(f"Epoch {i}")
         # 10 - [OK] Loop each house
         for house in HOUSES:
             weights = house_w[house]
-            # 11 - [OK] Create fresh accumulator (Σ) for each house each epoch
-            gradient = {feature: 0.0 for feature in features}
-            # 12 - [OK] Loop each student
-            for label, values in rows:
-                # 13 - [OK] Store the truth: Same house 1, other house 0
-                y = 1.0 if label == house else 0.0
-                # 14 - [OK] Calculate the probability of same house
-                p = hypothesis(weights, values)
-                # 15 - [OK] Calculate error = predict - truth
-                error = p - y
-                # 16 - [OK] Accumulate the accumulator
+            # 11 - [OK] Loop each batch of students
+            for batch in chunks(rows, size):
+                # 12 - [OK] Create fresh accumulator (Σ) for each batch
+                gradient = {feature: 0.0 for feature in features}
+                # 13 - [OK] Loop each student in the batch
+                for label, values in batch:
+                    # 14 - [OK] Store the truth: Same house 1, other house 0
+                    y = 1.0 if label == house else 0.0
+                    # 15 - [OK] Calculate the probability of same house
+                    p = hypothesis(weights, values)
+                    # 16 - [OK] Calculate error = predict - truth
+                    error = p - y
+                    # 17 - [OK] Accumulate the accumulator
+                    for feature in features:
+                        gradient[feature] += error * values[feature]
+                # 18 - [OK] Update the weights with this batch's accumulator
+                # This is the actual Gradient Descent step, divide by the batch
                 for feature in features:
-                    gradient[feature] += error * values[feature]
-            # 17 - [OK] Update the weights for current epoch with accumulator
-            # This is the actualy Gradient Descent
-            for feature in features:
-                weights[feature] -= STEP * (gradient[feature] / len(rows))
-            # 18 - [OK] Save training data for graph
+                    weights[feature] -= STEP * (gradient[feature] / len(batch))
+            # 19 - [OK] Save training data for graph (over the whole set)
             history[house].append(cost(rows, house, weights))
 
-    # 19 - [OK] Write weights, min and max to a file for classification later
+    # 20 - [OK] Write weights, min and max to a file for classification later
     save_weights(features, house_w, min_max)
-    # 20 - [OK] Draw training history graph to validate the training
+    # 21 - [OK] Draw training history graph to validate the training
     draw_history(history)
 
 
@@ -152,6 +160,11 @@ def draw_history(history: dict[str, list[float]]) -> None:
     graph.show()
 
 
+def chunks(rows, size):
+    for start in range(0, len(rows), size):
+        yield rows[start:start + size]
+
+
 # Cost function:
 # J(θ) = −(1/m) Σᵢ₌₁..m [ y⁽ⁱ⁾·log(hθ(x⁽ⁱ⁾)) + (1 − y⁽ⁱ⁾)·log(1 − hθ(x⁽ⁱ⁾)) ]
 # i is individual student, so x⁽ⁱ⁾ just mean values of current student
@@ -169,7 +182,8 @@ def draw_history(history: dict[str, list[float]]) -> None:
 # Since log() is negative, - at the start mean to flip to positive,
 # this mean the smaller J is the better, best case is J = 0
 # A wall of explanation for 7 lines of code, yay math!
-# Now what this does? No idea, meh
+# This return a number that tell how wrong the current weights are over the
+# whole set, the lower the better.
 def cost(
         rows: list[tuple[str, dict[str, float]]],
         house: str,
@@ -179,6 +193,7 @@ def cost(
     for label, values in rows:
         y = 1.0 if label == house else 0.0  # same house -> true
         p = hypothesis(weights, values)
+        p = min(max(p, 1e-15), 1 - 1e-15)
         total += y * math.log(p) + (1 - y) * math.log(1 - p)
     return -total / len(rows)
 
