@@ -11,10 +11,10 @@ from helper.plot import save_fig  # noqa: E402
 coloredlogs.install()
 
 
-houses = ["Gryffindor", "Ravenclaw", "Hufflepuff", "Slytherin"]
-skip = ["Index", "Hogwarts House", "First Name",
+HOUSES = ["Gryffindor", "Ravenclaw", "Hufflepuff", "Slytherin"]
+SKIP = ["Index", "Hogwarts House", "First Name",
         "Last Name", "Birthday", "Best Hand"]
-house_colors = {
+COLORS = {
     "Gryffindor": "red",
     "Ravenclaw":  "blue",
     "Hufflepuff": "yellow",
@@ -33,9 +33,9 @@ def histogram() -> None:
     house_col = data.get("Hogwarts House")
     plot = 1
     for name, values in data.items():
-        if name in skip:
+        if name in SKIP:
             continue
-        house_scores = {house: [] for house in houses}
+        house_scores = {house: [] for house in HOUSES}
         for i in range(len(house_col)):
             try:
                 score = float(values[i])
@@ -44,11 +44,11 @@ def histogram() -> None:
             house_scores[house_col[i]].append(score)
         graph.subplot(4, 4, plot)
         plot += 1
-        for house in houses:
+        for house in HOUSES:
             graph.hist(
                 house_scores[house],
                 label=house,
-                color=house_colors[house],
+                color=COLORS[house],
                 alpha=0.5,
                 edgecolor='black',
             )
