@@ -22,3 +22,19 @@
 
 ## Resources
 - [Logistic regression](https://www.geeksforgeeks.org/machine-learning/understanding-logistic-regression/)
+
+## General structure
+
+dslr/
+├── README.md                 Project setup instructions
+├── Makefile                  Short commands for running each part
+├── requirements.txt          External Python packages
+├── src/
+│   ├── datasets/             Training, testing, and dummy CSV data
+│   ├── helper/               Code shared by multiple programs
+│   ├── describe/             Statistical analysis
+│   ├── visualization/        Histograms and scatter plots
+│   └── model/                Logistic-regression training
+└── subjects/
+    ├── en.subject.pdf        Original school assignment
+    └── datasets/             Original copies of the datasets
