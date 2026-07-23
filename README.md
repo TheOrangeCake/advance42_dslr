@@ -26,15 +26,15 @@
 ## General structure
 
 dslr/
-├── README.md                 Project setup instructions
-├── Makefile                  Short commands for running each part
-├── requirements.txt          External Python packages
-├── src/
-│   ├── datasets/             Training, testing, and dummy CSV data
-│   ├── helper/               Code shared by multiple programs
-│   ├── describe/             Statistical analysis
-│   ├── visualization/        Histograms and scatter plots
-│   └── model/                Logistic-regression training
-└── subjects/
-    ├── en.subject.pdf        Original school assignment
-    └── datasets/             Original copies of the datasets
+├── README.md                 Project setup instructions <b>
+├── Makefile                  Short commands for running each part <b>
+├── requirements.txt          External Python packages <b>
+├── src/ <b>
+│   ├── datasets/             Training, testing, and dummy CSV data <b>
+│   ├── helper/               Code shared by multiple programs <b>
+│   ├── describe/             Statistical analysis <b>
+│   ├── visualization/        Histograms and scatter plots <b>
+│   └── model/                Logistic-regression training <b>
+└── subjects/ <b>
+    ├── en.subject.pdf        Original school assignment <b>
+    └── datasets/             Original copies of the datasets <b>
