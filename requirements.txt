@@ -7,7 +7,6 @@ humanfriendly==10.0
 kiwisolver==1.5.0
 matplotlib==3.11.0
 mccabe==0.7.0
-numpy==2.5.1
 packaging==26.2
 pillow==12.3.0
 pycodestyle==2.14.0
