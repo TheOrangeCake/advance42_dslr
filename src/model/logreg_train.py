@@ -7,7 +7,7 @@ import csv
 from pathlib import Path
 import coloredlogs
 sys.path.append(str(Path(__file__).parent.parent))
-from helper.read_data import read_dataset  # noqa: E402
+from helper.read_data import read_dataset, is_numeric_column  # noqa: E402
 from helper.plot import save_fig  # noqa: E402
 from describe.min_max_perc import cal_min, cal_max  # noqa: E402
 
@@ -67,7 +67,8 @@ def train() -> None:
 
     data = read_dataset(sys.argv[1])
 
-    features = [name for name in data.keys() if name not in SKIP]
+    features = [name for name in data.keys()
+                if name not in SKIP and is_numeric_column(data[name])]
 
     #  4 - [OK] Go through the dataset to get the min and max
     min_max = cal_min_max(features, data)
@@ -259,7 +260,7 @@ def convert_to_rows(
         ) -> list[tuple[str, dict[str, float]]]:
     rows = []
     houses = data.get("Hogwarts House")
-    if not houses:
+    if not houses or not any(h in HOUSES for h in houses):
         logging.critical('Missing or empty "Hogwarts House" column')
         sys.exit(-1)
     for i in range(len(houses)):
