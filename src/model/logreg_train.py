@@ -49,11 +49,12 @@ WEIGHTS_PATH = Path(__file__).resolve().parents[2] / "weights.csv"
 
 #  1 - [OK] Define a learning rate / step so training can be faster
 #      GD: 0.5; mini-batch: 0.5; SGD: 0.5;
-STEP = 0.5
+STEP = 2.0
 #  2 - [OK] Define number of epochs
 #      GD: 1000; mini-batch: 200; SDG: 75;
 EPOCHS = 1000
 #  3 - [OK] Define batch size
+# important pour bonus to do sylvie
 #      GD: None; mini-batch: 32; SGD: 1;
 BATCH_SIZE = None
 

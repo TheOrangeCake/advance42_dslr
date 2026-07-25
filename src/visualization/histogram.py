@@ -31,6 +31,7 @@ def histogram() -> None:
 
     data = read_dataset(sys.argv[1])
     house_col = data.get("Hogwarts House")
+    #ou ca se trouve dans le fichier de sortie
     plot = 1
     for name, values in data.items():
         if name in SKIP:

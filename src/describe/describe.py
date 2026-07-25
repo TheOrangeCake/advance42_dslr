@@ -12,7 +12,7 @@ from helper.models import Feature  # noqa: E402
 
 coloredlogs.install()
 
-
+#make calculation
 def describe() -> None:
     if len(sys.argv) != 2:
         logging.critical('Usage: ./describe [Dataset path]')
@@ -20,6 +20,7 @@ def describe() -> None:
     else:
         logging.info(f"Dataset source: {sys.argv[1]}")
 
+#fonction principale make describe nan quand ya pas de valeur ou non exploitable
     data = read_dataset(sys.argv[1])
     filtered_data = only_numeric(data)
     features: list[Feature] = []
@@ -31,11 +32,16 @@ def describe() -> None:
         feature.half = cal_per(values, 50)
         feature.three_quarter = cal_per(values, 75)
         feature.max = cal_max(values)
+        #bonus range= difference entre valeur max et min
         feature.range = cal_range(values)
         feature.nan = cal_nan_count(data[name])
         # Insert more calculation here
+        #TO DO SYLVIE
+        #feature.count() a faire pas syl avec mean et std
+        #features = liste de toutes  les colonnes
         features.append(feature)
 
+     
     display(features)
     return
 
