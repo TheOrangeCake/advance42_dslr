@@ -32,17 +32,23 @@ def histogram() -> None:
     data = read_dataset(sys.argv[1])
     house_col = data.get("Hogwarts House")
     #ou ca se trouve dans le fichier de sortie
+    if not house_col:
+        logging.critical('Missing or empty "Hogwarts House" column')
+        return
     plot = 1
     for name, values in data.items():
         if name in SKIP:
             continue
         house_scores = {house: [] for house in HOUSES}
         for i in range(len(house_col)):
+            house = house_col[i]
+            if house not in house_scores:
+                continue
             try:
                 score = float(values[i])
             except ValueError:
                 continue
-            house_scores[house_col[i]].append(score)
+            house_scores[house].append(score)
         graph.subplot(4, 4, plot)
         plot += 1
         for house in HOUSES:
