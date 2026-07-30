@@ -11,6 +11,8 @@ sys.path.append(str(Path(__file__).parent.parent))
 from helper.read_data import read_dataset, only_numeric  # noqa: E402
 from helper.models import Feature  # noqa: E402
 
+#a effacer
+import numpy as np
 
 coloredlogs.install()
 
@@ -40,10 +42,9 @@ def describe() -> None:
         feature.nan = cal_nan_count(data[name])
         feature.count = cal_count(values)
         feature.mean = cal_mean(values)
-        feature.std = cal_std(values)
+        #feature.std = np.std(values)
+        feature.std = cal_std(values, feature.count, feature.mean)
         # Insert more calculation here
-        #TO DO SYLVIE
-        #feature.count() a faire pas syl avec mean et std
         #features = liste de toutes  les colonnes
         features.append(feature)
 

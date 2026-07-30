@@ -1,9 +1,9 @@
-def cal_count(values: list[float]) -> float:
-    if not values:
-        return float('nan')
+import math 
+
+def cal_count(values: list[float]) -> int:
     number = 0
     for value in values:
-        if value:
+        if value is not None and not math.isnan(value):
             number += 1
     return number
 
@@ -15,7 +15,7 @@ def cal_mean(values: list[float]) -> float:
     total = 0
     try:
         for value in values:
-            if value is not None:
+            if value is not None and not math.isnan(value):
                 occurrences += 1
                 total += value
         mean = total / occurrences
@@ -23,7 +23,13 @@ def cal_mean(values: list[float]) -> float:
         return float('nan')
     return mean
 
-def cal_std(values: list[float]) -> float:
-    if not values:
+#standard deviation
+def cal_std(values: list[float], count:int, mean: float) -> float:
+    if not values or  count < 2:
         return float('nan')
-        
+    squared_differences = 0.0
+    for value in values:
+        if value is not None and not math.isnan(value):
+            squared_differences += (value - mean) ** 2
+    standard_deviation = math.sqrt((squared_differences / (count - 1)))
+    return (standard_deviation)
