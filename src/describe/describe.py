@@ -6,7 +6,7 @@ import coloredlogs
 from min_max_perc import cal_min, cal_max, cal_per
 from bonus_nan_range import cal_nan_count, cal_range
 from display import display
-from count_mean_std import count_occurrences
+from count_mean_std import cal_count, cal_mean, cal_std
 sys.path.append(str(Path(__file__).parent.parent))
 from helper.read_data import read_dataset, only_numeric  # noqa: E402
 from helper.models import Feature  # noqa: E402
@@ -38,7 +38,9 @@ def describe() -> None:
         #bonus range= difference entre valeur max et min
         feature.range = cal_range(values)
         feature.nan = cal_nan_count(data[name])
-        feature.count = count_occurrences(values)
+        feature.count = cal_count(values)
+        feature.mean = cal_mean(values)
+        feature.std = cal_std(values)
         # Insert more calculation here
         #TO DO SYLVIE
         #feature.count() a faire pas syl avec mean et std
