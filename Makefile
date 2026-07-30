@@ -10,13 +10,16 @@ FLAKE = venv/bin/flake8
 all: describe histogram scatter train
 
 describe:
-	$(PYTHON) src/describe/describe.py $(DATA_TEST)
+	$(PYTHON) src/describe/describe.py $(DATA_TRAIN)
 
 histogram:
 	$(PYTHON) src/visualization/histogram.py $(DATA_TRAIN)
 	
 scatter:
 	$(PYTHON) src/visualization/scatter.py $(DATA_TRAIN)
+
+pair:
+	$(PYTHON) src/visualization/pair_plot.py $(DATA_DUMMY)
 
 train:
 	$(PYTHON) src/model/logreg_train.py $(DATA_TRAIN)
