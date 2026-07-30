@@ -31,6 +31,7 @@ def histogram() -> None:
 
     data = read_dataset(sys.argv[1])
     house_col = data.get("Hogwarts House")
+    #ou ca se trouve dans le fichier de sortie
     if not house_col:
         logging.critical('Missing or empty "Hogwarts House" column')
         return

@@ -5,7 +5,8 @@ import coloredlogs
 
 coloredlogs.install()
 
-
+#read the csv file return the columns
+#dict key feature like artimetic  herbology.... list les values
 def read_dataset(data_train: str) -> dict[str, list[str]]:
     try:
         with open(data_train, mode='r') as file:
@@ -22,6 +23,7 @@ def read_dataset(data_train: str) -> dict[str, list[str]]:
         sys.exit(-1)
 
 
+#enleve colone non numeric check
 def is_numeric_column(values: list[str]) -> bool:
     has_value = False
     for v in values:
@@ -35,7 +37,7 @@ def is_numeric_column(values: list[str]) -> bool:
             return False
     return has_value
 
-
+#enleve colone non numeric 
 def only_numeric(data: dict[str, list[str]]) -> dict[str, list[float]]:
     result = {}
     for name, values in data.items():

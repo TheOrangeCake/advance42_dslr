@@ -1,6 +1,6 @@
 from math import floor
 
-
+#calculs pour make describe
 def cal_min(values: list[float]) -> float:
     if not values:
         return float('nan')
