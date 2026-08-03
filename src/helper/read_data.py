@@ -47,3 +47,31 @@ def only_numeric(data: dict[str, list[str]]) -> dict[str, list[float]]:
             continue
         result[name] = [float(v) for v in values if v != '']
     return result
+
+
+
+# proposal Sylvie
+# dictionnary with lists str or float
+def read_dataset2(data_train: str):
+    try:
+        with open(data_train, mode='r') as file:
+            header = file.readline().strip().split(',')
+            data = {col: [] for col in header}
+            
+            for line in file:
+                values = line.strip().split(',')
+                for col, val in zip(header, values):
+                    # Si la valeur est vide, on garde None (ou NaN)
+                    if val == '':
+                        data[col].append(None)
+                    else:
+                        try:
+                            data[col].append(float(val))
+                        except ValueError:
+                            data[col].append(val)
+    
+    except IOError as ioe:
+        logging.critical(f"Error opening file: {ioe}")
+        sys.exit(-1)
+    
+    return data

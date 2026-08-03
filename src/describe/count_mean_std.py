@@ -33,3 +33,15 @@ def cal_std(values: list[float], count:int, mean: float) -> float:
             squared_differences += (value - mean) ** 2
     standard_deviation = math.sqrt((squared_differences / (count - 1)))
     return (standard_deviation)
+
+def diff_max_min(values: list[float]) -> float:
+    max = 0
+    min = 0
+    for value in values:
+        if value is not None and not math.isnan(value) and value > max:
+            max = value
+        elif value is not None and not math.isnan(value) and value < min:
+            min = value
+        else:
+            continue
+    return (max-min)

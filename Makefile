@@ -14,7 +14,10 @@ describe:
 
 histogram:
 	$(PYTHON) src/visualization/histogram.py $(DATA_TRAIN)
-	
+
+histogram2:
+	$(PYTHON) src/visualization/histogram2.py $(DATA_TRAIN)
+
 scatter:
 	$(PYTHON) src/visualization/scatter.py $(DATA_TRAIN)
 
