@@ -27,22 +27,6 @@ COLORS = {
 
 COURSES = ["Arithmancy", "Astronomy", "Herbology", "Defense Against the Dark Arts", "Divination", "Muggle Studies", "Ancient Runes", "History of Magic", "Transfiguration", "Potions", "Care of Magical Creatures", "Charms", "Flying"]
 
-COURSE_COLORS = {
-    "Arithmancy": "tab:blue",
-    "Astronomy": "tab:orange",
-    "Herbology": "tab:green",
-    "Defense Against the Dark Arts": "tab:red",
-    "Divination": "tab:purple",
-    "Muggle Studies": "tab:brown",
-    "Ancient Runes": "tab:pink",
-    "History of Magic": "tab:gray",
-    "Transfiguration": "tab:olive",
-    "Potions": "tab:cyan",
-    "Care of Magical Creatures": "gold",
-    "Charms": "navy",
-    "Flying": "darkmagenta",
-}
-
 def get_data_house_course(data, house_name, branch):
     values = []
 
@@ -53,13 +37,14 @@ def get_data_house_course(data, house_name, branch):
                 values.append(val)
     return values
 
+# calculate the spread of each house mean and std. 
+# normalize it to have the same scale
+# add it. More the spread of mean and std are large, more the index show it is not homogene
 def homogeneity_index(data, course):
-    course_scores = {course: [] for course in COURSES}
-
     mean_houses = []
     std_houses  = []
     dif_max_min = cal.diff_max_min(data[course])
-      
+
     for house in HOUSES:
         house_course_data = get_data_house_course(data, house, course)
         count = cal.cal_count(house_course_data)
@@ -71,13 +56,20 @@ def homogeneity_index(data, course):
     mean_spread = cal.diff_max_min(mean_houses)
     std_spread = cal.diff_max_min(std_houses)
 
-    #mise à l'échelle
+    #normalize
     mean_spread_norm = mean_spread / dif_max_min
     std_spread_norm = std_spread / dif_max_min
 
     index = mean_spread_norm + std_spread_norm
     return index
 
+def select_course(homogeneity_ind: dict[str, float]) -> str:
+    choosen_course = COURSES[0]
+    for course in COURSES:
+        if (homogeneity_ind[course] < homogeneity_ind[choosen_course]):
+            choosen_course = course
+    return choosen_course
+
 
 def histogram2() -> None:
     if len(sys.argv) != 2:
@@ -88,99 +80,24 @@ def histogram2() -> None:
 
     data = read_dataset2(sys.argv[1])
     house_col = data.get("Hogwarts House")
-    if not house_col:
-        logging.critical('Missing or empty "Hogwarts House" column')
-        return
-    
-    plot = 1
-    course_scores = {course: [] for course in COURSES}
-    for course in COURSES:
-#        count_of_branch = cal.cal_mean(data[course])
-#        mean_of_branch = cal.cal_mean(data[course])
-        #mise à l'échelle avec min max ???
-        dif_max_min = cal.diff_max_min(data[course])
-        
-        #house_scores = {house: [] for house in HOUSES}
-        
-        for house in HOUSES:
-            house_course_data = get_data_house_course(data, house, course)
-            count = cal.cal_count(house_course_data)
-            mean = cal.cal_mean(house_course_data)
-            std = cal.cal_std(house_course_data, count, mean)
-            std = std / dif_max_min
-            print(house, ": ", std)
-            #mise à l échelle ???
-            course_scores[course].append(std)
-
-    graph.subplot(1, 2, plot)
-    # ici sortir le 
-    for course in COURSES:
-        print(course, ": ", course_scores[course])
-        graph.hist(
-            course_scores[course],
-            label=course,
-            color=COURSE_COLORS[course],
-            alpha=0.5,
-            edgecolor='black',
-        )
-        #graph.title(course)
-    graph.title("Histogram2")
-    handles, labels = graph.gca().get_legend_handles_labels()
-    graph.figlegend(handles, labels, loc='lower right')
-    save_fig("histogram", "histogram.png")
-    graph.show()
-
-""" 
-def histogram2() -> None:
-    if len(sys.argv) != 2:
-        logging.critical('Usage: ./histogram [Dataset path]')
-        return
-    else:
-        logging.info(f"Histogram Dataset source: {sys.argv[1]}")
-
-    data = read_dataset2(sys.argv[1])
-    house_col = data.get("Hogwarts House")
+    #ou ca se trouve dans le fichier de sortie
     if not house_col:
         logging.critical('Missing or empty "Hogwarts House" column')
         return
     plot = 1
+    # name = course. plus compréhensible
+    homogeneity_ind : dict[str, float] = {}
+    for course in COURSES:
+        homogeneity_ind[course] = homogeneity_index(data, course)
 
-#    print(data)
-
-#    print(data['First Name'])
-    #print(type(data['Astronomy']))
-#    for n in data['Astronomy']:
-#        print(n)
-#       print(type(n))
-
-        #search in datas
-#    count_1 = cal.cal_count((data['Astronomy']))
-#    print("count ", count_1)
-#    mean = cal.cal_mean(data['Astronomy'])
-#    print("mean: ", mean)
-#    print("std ", cal.cal_std(data['Astronomy'], count_1, mean))
-#    get_data_house_course(data, "Hufflepuff", "Arithmancy")
-    #print("get data house", get_data_house_course(data, "Hufflepuff", "Arithmancy"))
-
-
-    for course in data.keys():
-        if course in SKIP:
-            continue
-#        count_of_branch = cal.cal_mean(data[course])
-#        mean_of_branch = cal.cal_mean(data[course])
-        #mise à l'échelle avec min max ???
-        #dif_max_min = cal.diff_max_min(data[course])
-        
+        #homogeneity_ind[course] = homogeneity_index(data, course)
         house_scores = {house: [] for house in HOUSES}
-        for house in HOUSES:
-            house_course_data = get_data_house_course(data, house, course)
-            count = cal.cal_count(house_course_data)
-            mean = cal.cal_mean(house_course_data)
-            std = cal.cal_std(house_course_data, count, mean)
-            #mise à l échelle ???
-            house_scores[house] = std
 
+        for house in HOUSES:
+            house_scores[house] = get_data_house_course(data, house, course)
+        #build graphics
         graph.subplot(4, 4, plot)
+        graph.xlabel(f"H index: {homogeneity_ind[course]:.3f}")
         plot += 1
         for house in HOUSES:
             graph.hist(
@@ -193,15 +110,35 @@ def histogram2() -> None:
         graph.title(course)
     handles, labels = graph.gca().get_legend_handles_labels()
     graph.figlegend(handles, labels, loc='lower right')
-    save_fig("histogram", "histogram.png")
+    save_fig("histogram2", "histogram2.png")
+    #graph.show()
+    graph.figure()
+    plot = 1
+    #display the most homogeneous course
+    most_homogeneous_course = select_course(homogeneity_ind)
+    house_scores = {house: [] for house in HOUSES}
+    for house in HOUSES:
+        house_scores[house] = get_data_house_course(data, house, most_homogeneous_course)
+        #build graphics
+    graph.subplot(1, 1, plot)
+    graph.xlabel(f"H index: {homogeneity_ind[most_homogeneous_course]:.3f} , {most_homogeneous_course}")
+    #plot += 1
+    for house in HOUSES:
+        graph.hist(
+            house_scores[house],
+            label=house,
+            color=COLORS[house],
+            alpha=0.5,
+            edgecolor='black',
+        )
+    graph.title("most homogeneous course")
+    handles, labels = graph.gca().get_legend_handles_labels()
+    graph.figlegend(handles, labels, loc='lower right')
+    save_fig("histogram2", "Most homogeneous score distribution.png")
     graph.show()
-    # Conclusion:
-    # Q: Which Hogwarts course has a homogeneous score
-    #    distribution between all four houses?
-    # A: Arithmancy and Care of Magical Creatures
-#proposal Sylvie
-"""
+
+
 
 if __name__ == "__main__":
     histogram2()
-    #histogram2()
+

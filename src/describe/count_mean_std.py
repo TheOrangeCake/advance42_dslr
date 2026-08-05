@@ -35,12 +35,12 @@ def cal_std(values: list[float], count:int, mean: float) -> float:
     return (standard_deviation)
 
 def diff_max_min(values: list[float]) -> float:
-    max = 0
-    min = 0
+    max = float('-inf')
+    min = float('inf')
     for value in values:
         if value is not None and not math.isnan(value) and value > max:
             max = value
-        elif value is not None and not math.isnan(value) and value < min:
+        if value is not None and not math.isnan(value) and value < min:
             min = value
         else:
             continue
