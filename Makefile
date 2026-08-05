@@ -22,7 +22,7 @@ scatter:
 	$(PYTHON) src/visualization/scatter.py $(DATA_TRAIN)
 
 pair:
-	$(PYTHON) src/visualization/pair_plot.py $(DATA_DUMMY)
+	$(PYTHON) src/visualization/pair_plot.py $(DATA_TRAIN)
 
 train:
 	$(PYTHON) src/model/logreg_train.py $(DATA_TRAIN)
