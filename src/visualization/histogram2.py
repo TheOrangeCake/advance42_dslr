@@ -35,7 +35,12 @@ def get_data_house_course(data, house_name, branch):
             val = data[branch][i]
             if val is not None and val != ''and val == val:
                 values.append(val)
+            else:
+                values.append(None)
     return values
+
+def filter_non(values):
+    return [v for v in values if v is not None]
 
 # calculate the spread of each house mean and std. 
 # normalize it to have the same scale
@@ -47,6 +52,7 @@ def homogeneity_index(data, course):
 
     for house in HOUSES:
         house_course_data = get_data_house_course(data, house, course)
+        house_course_date = filter_non(house_course_data)
         count = cal.cal_count(house_course_data)
         mean = cal.cal_mean(house_course_data)
         std = cal.cal_std(house_course_data, count, mean)
@@ -95,6 +101,7 @@ def histogram2() -> None:
 
         for house in HOUSES:
             house_scores[house] = get_data_house_course(data, house, course)
+            house_scores[house] = filter_non(house_scores[house])
         #build graphics
         graph.subplot(4, 4, plot)
         graph.xlabel(f"H index: {homogeneity_ind[course]:.3f}")
@@ -119,6 +126,7 @@ def histogram2() -> None:
     house_scores = {house: [] for house in HOUSES}
     for house in HOUSES:
         house_scores[house] = get_data_house_course(data, house, most_homogeneous_course)
+        house_scores[house] = filter_non(house_scores[house])
         #build graphics
     graph.subplot(1, 1, plot)
     graph.xlabel(f"H index: {homogeneity_ind[most_homogeneous_course]:.3f} , {most_homogeneous_course}")

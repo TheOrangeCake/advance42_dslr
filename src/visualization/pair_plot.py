@@ -1,8 +1,3 @@
-#TO DO SYLVIE
-
-#INDEPENDANT DONC DOIT RELIRE DEPUIS DATASET
-
-
 #!/usr/bin/env python3
 import matplotlib.pyplot as graph
 import sys
@@ -12,7 +7,7 @@ import coloredlogs
 sys.path.append(str(Path(__file__).parent.parent))
 from helper.read_data import read_dataset2  # noqa: E402
 from helper.plot import save_fig  # noqa: E402
-from histogram2 import get_data_house_course
+from histogram2 import get_data_house_course, filter_non
 
 
 HOUSES = ["Gryffindor", "Ravenclaw", "Hufflepuff", "Slytherin"]
@@ -25,124 +20,73 @@ COLORS = {
 COURSES = ["Arithmancy", "Astronomy", "Herbology", "Defense Against the Dark Arts", "Divination", "Muggle Studies", "Ancient Runes", "History of Magic", "Transfiguration", "Potions", "Care of Magical Creatures", "Charms", "Flying"]
 
 def pair_plot():
+    #read data
     if len(sys.argv) != 2:
         logging.critical('Usage: ./histogram [Dataset path]')
         return
     else:
-        logging.info(f"Histogram Dataset source: {sys.argv[1]}")
+        logging.info(f"Pair Plot Dataset source: {sys.argv[1]}")
     data = read_dataset2(sys.argv[1])
-#    for i in data:
-#        print(i, data[i])
 
+    #init graphic
     plot = 1
-    graph.xlabel("graphic")
+    figure, axes = graph.subplots(len(COURSES), len(COURSES), figsize=(20,20))
     
     #loop1 for each feat (course)
-    for courseX in COURSES:
-        graph.xticks(ticks=courseX)
-        for courseY in COURSES:
-            if courseX == courseY:
-                pair_histogramm(data, courseX, plot)
+    for row, course_y in enumerate(COURSES):
+        for col, course_x in enumerate(COURSES):
+
+            # name on axes
+            axis = axes[row][col]
+            if row == 0:
+                axis.set_title(course_x, fontsize=8)
+            if col == 0:
+                axis.set_ylabel(course_y, fontsize=8)
+                axis.yaxis.set_label_coords(-0.15, 0.5)
+
+            if course_x == course_y:
+                pair_histogramm(data, course_x, axis)
             else:
-                pair_scatter(data, courseX, courseY)
-            #make graph
-            plot += 1
+                pair_scatter(data, course_x, course_y, axis)
 
-                
-            #titre des axes
-            #graph.xlabel(a)
-            #graph.ylabel(b)
-    
     handles, labels = graph.gca().get_legend_handles_labels()
-
     graph.figlegend(handles, labels, loc='lower right')
     for ax in graph.gcf().get_axes():
         ax.set_xticks([])
         ax.set_yticks([])
-    #graph.title(f'pair_plot22') on met pas....
     #créer le fichier
     save_fig("pair_plot", "pair_plot.png")
-    #graph.show()
-    #afficher graph
-    #print(data)
 
-def pair_scatter(data, courseX, couseY):
-
-    return
-
-def pair_histogramm(data, courseX, plot):
+def pair_histogramm(data, course_x, axis):
     house_scores = {house: [] for house in HOUSES}
 
     for house in HOUSES:
-        house_scores[house] = get_data_house_course(data, house, courseX)
-    #build graphics
-    ax = graph.subplot(len(COURSES), len(COURSES), plot)
-    #ax.set_xticks([])
-    #ax.set_yticks([])
-    #graph.subplot(len(COURSES), len(COURSES), plot)
-#    graph.xlabel(f"H index: {homogeneity_ind[course]:.3f}")
-
+        house_scores[house] = get_data_house_course(data, house, course_x)
+        house_scores[house] = filter_non(house_scores[house])
     for house in HOUSES:
-        graph.hist(
+        axis.hist(
             house_scores[house],
             label=house,
             color=COLORS[house],
             alpha=0.5,
             edgecolor='black',
         )
-    #graph.title(courseX)
-    #handles, labels = graph.gca().get_legend_handles_labels()
-    
+
+def pair_scatter(data, course_x, course_y, axis):
+    for house in HOUSES:
+        house_scores_x = get_data_house_course(data, house, course_x)
+        house_scores_y = get_data_house_course(data, house, course_y)
+        house_scores_x, house_scores_y = filter_non_pair(house_scores_x, house_scores_y)
+        axis.scatter(house_scores_x, house_scores_y, s=10, color=COLORS[house], alpha=0.5)
+    return
+
+def filter_non_pair(house_scores_x, house_scores_y):
+    house_scores_x_new, house_scores_y_new  = [], []
+    for x, y in zip(house_scores_x, house_scores_y):
+        if x is not None and y is not None:
+            house_scores_x_new.append(x)
+            house_scores_y_new.append(y)
+    return house_scores_x_new, house_scores_y_new
 
 if __name__ == "__main__":
     pair_plot()
-
-
-"""
-    # scatter = dispersion
-    def scatter() -> None:
-    if len(sys.argv) != 2:
-        logging.critical('Usage: ./scatter [Dataset path]')
-        return
-    else:
-        logging.info(f"Scatter Dataset source: {sys.argv[1]}")
-
-    data = read_dataset(sys.argv[1])
-
-    per_fig = 9
-    count = 0
-    fig_num = 1
-    features = [name for name in data if name not in SKIP]
-    for i in range(len(features)):
-        for j in range(i + 1, len(features)):
-            #chaque branche
-            a = features[i]
-            b = features[j]
-
-            #ai pas encore compris
-            x, y = build_axes(data, a, b)
-
-            # pas compris
-            pos = count % per_fig + 1
-
-            # ok il a mis 3 x 3 mais moi je vais mettre genre 13  x 13. Le nombre de course
-            graph.subplot(3, 3, pos)
-            #rajouter couleur x,y c'est les données, s c'est la taille du point. on va rajouer color
-
-            graph.scatter(x, y, s=10)
-            # pour mettre le titre. Mais attention nous on doit mettre le titre en haut et de coté.
-            #titre de chaque graphique
-            graph.title(f'{a} vs {b}')
-            #titre des axes
-            graph.xlabel(a)
-            graph.ylabel(b)
-            count += 1
-            if (count % per_fig == 0):
-                save_fig("scatter", f"scatter_{fig_num}.png")
-                graph.close()
-                fig_num += 1
-                graph.figure()
-    if count % per_fig != 0:
-        save_fig("scatter", f"scatter_{fig_num}.png")
-        graph.close()
-"""
