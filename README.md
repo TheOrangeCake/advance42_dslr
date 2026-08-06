@@ -214,6 +214,8 @@ target is at least 98%.
 ## Resources
 
 - [Logistic regression](https://www.geeksforgeeks.org/machine-learning/understanding-logistic-regression/)
+- [matplotlib](https://matplotlib.org/3.5.3/api/_as_gen/matplotlib.pyplot.html)
+
 
 ## Dev
 
