@@ -27,6 +27,9 @@ pair:
 train:
 	$(PYTHON) src/model/logreg_train.py $(DATA_TRAIN)
 
+train2:
+	$(PYTHON) src/model/logreg_train2.py $(DATA_TRAIN)
+
 require:
 	$(PIP) freeze > requirements.txt
 
