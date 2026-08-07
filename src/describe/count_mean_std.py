@@ -9,7 +9,7 @@ def cal_count(values: list[float]) -> int:
 
 #The arithmetic mean is the sum of the data divided by the number of data points.
 def cal_mean(values: list[float]) -> float:
-    if not values:
+    if values is None or len(values) == 0:
         return float('nan')
     occurrences = 0
     total = 0
