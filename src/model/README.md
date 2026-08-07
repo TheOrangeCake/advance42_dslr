@@ -86,7 +86,8 @@ h_\theta(x)=g(\theta^T x)
 $$
 
 **hypothesis**
-
+    if max == '-inf' or min == 'inf':
+        return 'nan'
 With:
 
 $$

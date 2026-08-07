@@ -30,6 +30,9 @@ train:
 train2:
 	$(PYTHON) src/model/logreg_train2.py $(DATA_TRAIN)
 
+predict:
+	$(PYTHON) src/model/predict.py $(DATA_TRAIN)
+
 require:
 	$(PIP) freeze > requirements.txt
 
