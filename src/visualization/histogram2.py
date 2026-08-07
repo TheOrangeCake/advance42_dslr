@@ -45,7 +45,8 @@ def homogeneity_index(data, course):
     mean_houses = []
     std_houses  = []
     dif_max_min = cal.diff_max_min(data[course])
-
+    if dif_max_min == 0 or dif_max_min != dif_max_min or dif_max_min in (float('inf'), float('-inf')):
+        return float('nan')
     for house in HOUSES:
         house_course_data = get_data_house_course(data, house, course)
         house_course_date = filter_non(house_course_data)
