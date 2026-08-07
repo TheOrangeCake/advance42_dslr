@@ -5,15 +5,11 @@ import logging
 from pathlib import Path
 import coloredlogs
 sys.path.append(str(Path(__file__).parent.parent))
-from helper.read_data import read_dataset  # noqa: E402
-from helper.plot import save_fig  # noqa: E402
-from pprint import pprint
-#from describe.count_mean_std import cal_count 
-coloredlogs.install()
-
 from helper.read_data import read_dataset2  # noqa: E402
-import describe.count_mean_std as cal
+from helper.plot import save_fig  # noqa: E402
+import describe.count_mean_std as cal  # noqa: E402
 
+coloredlogs.install()
 
 HOUSES = ["Gryffindor", "Ravenclaw", "Hufflepuff", "Slytherin"]
 SKIP = ["Index", "Hogwarts House", "First Name",
