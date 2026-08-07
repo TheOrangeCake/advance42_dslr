@@ -8,7 +8,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 from helper.read_data import read_dataset2  # noqa: E402
 from helper.plot import save_fig  # noqa: E402
 from histogram2 import get_data_house_course, filter_non
-
+coloredlogs.install()
 
 HOUSES = ["Gryffindor", "Ravenclaw", "Hufflepuff", "Slytherin"]
 COLORS = {
