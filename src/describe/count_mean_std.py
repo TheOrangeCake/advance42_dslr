@@ -44,4 +44,6 @@ def diff_max_min(values: list[float]) -> float:
             min = value
         else:
             continue
+    if max == float('-inf') or min == float('inf'):
+        return float('nan')
     return (max-min)
