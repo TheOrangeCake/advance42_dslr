@@ -30,6 +30,9 @@ train:
 train2:
 	$(PYTHON) src/model/logreg_train2.py $(DATA_TRAIN)
 
+train3:
+	$(PYTHON) src/model/logreg_train3.py $(DATA_DUMMY)
+
 predict:
 	$(PYTHON) src/model/predict.py $(DATA_TRAIN)
 
@@ -48,5 +51,9 @@ dummy:
 
 dummy2:
 	$(PYTHON) src/describe/describe.py $(DATA_DUMMY_2)
+
+# to erase
+data:
+	$(PYTHON) src/helper/newread.py $(DATA_DUMMY)
 
 .PHONY: all describe histogram scatter train require install flake dummy

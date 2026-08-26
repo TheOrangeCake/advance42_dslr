@@ -2,6 +2,7 @@ import csv
 import sys
 import logging
 import coloredlogs
+import numpy as np
 
 coloredlogs.install()
 
@@ -75,3 +76,97 @@ def read_dataset2(data_train: str):
         sys.exit(-1)
     
     return data
+
+
+'''
+STRATEGY:
+read datas and keep all in str. 
+then extract numpy with what you need.
+but always keep all names somewhere
+
+functions:
+read data set
+remove unused data index?, first name, last name, birthday, best hand. 
+
+select datas and return numpy: 
+by branch
+by house
+by student. 
+
+check what is needed in all the project. 
+
+'''
+def read_dataset3(data_train: str) -> dict[str, list[str]]:
+    try:
+        with open(data_train, mode='r') as file:
+            reader = csv.DictReader(file)
+            fields = reader.fieldnames or []
+            columns = {name: [] for name in fields}
+            for row in reader:
+                for name in fields:
+                    data = (row[name] or '').strip()
+                    columns[name].append(data)
+        data = remove_useless_data(columns)
+        data = empty_values(data)
+        return columns
+    except IOError as ioe:
+        logging.critical(f"Error opening file: {ioe}")
+        sys.exit(-1)
+
+def remove_useless_data(data: dict[str, list[str]]) -> None:
+    data.pop("Index")
+    data.pop("First Name")
+    data.pop("Last Name")
+    data.pop("Birthday")
+    data.pop("Best Hand")
+    return data
+
+#then it is easier to convert empty values
+def empty_values(data: dict[str, list[str]]) -> None:
+  for column in data:
+      for i in range(len(data[column])):
+          if data[column][i] == "":
+              data[column][i] = "nan"
+
+## get courses list
+def get_courses_list(data: dict[str, list[str]]) -> list[str]:
+    courses_list = []
+    for i in data:
+        if i == "Hogwarts House":
+            continue
+        courses_list.append(i)
+    return courses_list
+
+## get houses list
+def get_houses_list(data: dict[str, list[str]]) -> list[str]:
+    if ("Hogwarts House") not in data:
+        raise KeyError("No Hogwarts House in data set")
+    houses_list = []
+    for i in range(len(data["Hogwarts House"])):
+        if data["Hogwarts House"][i] not in houses_list:
+            houses_list.append(data["Hogwarts House"][i])
+    return houses_list
+
+## !!! mettre erreur
+def nb_students(data: dict[str, list[str]]) -> int:
+    return len(data["Hogwarts House"])
+
+# get data by branch in numpy
+#for part 1 and 2
+def course_data(data: dict[str, list[str]], branch: str):
+  if branch not in data:
+    raise KeyError("This course is not in data set")
+  return np.array(data[branch], dtype=float)
+
+def get_students_grades(data: dict[str, list[str]]):
+    course_list = get_courses_list(data)
+    for i in range(len(data[1])):
+        for course in course_list:
+            data[course][i]
+#get student datas:
+#def get_students_data(data: dict[str, list[str]])
+#house
+#grades
+
+
+#get all students in a house. 

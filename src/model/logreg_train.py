@@ -258,6 +258,8 @@ def convert_to_rows(
         features: list[str],
         data: dict[str, list[str]],
         normalized: dict[str, list[float]]
+            # dict[str, float]-> str: nom feature, float: valeur
+            # tuple[str, dict[]] -> str: nom de la maison
         ) -> list[tuple[str, dict[str, float]]]:
     rows = []
     houses = data.get("Hogwarts House")

@@ -7,6 +7,17 @@ on va reprendre le logre_train
         for house in HOUSES
             probability = 
             house_prob.append()
+
+
+ordre des courses
+means
+stds
+valeurs utilisées pour remplacer les NaN
+weights pour chaque maison
+bias pour chaque maison
+
+il faut réutiliser les mêmes processus pour préparer les données que dans le training. 
+
 """
 
 def prediction(data_features, weight, biais):
