@@ -270,3 +270,6 @@ make train trains the logistic-regression model.
 make all runs all four in sequence.
 make flake checks Python style.
 
+
+
+pip install scikit-learn

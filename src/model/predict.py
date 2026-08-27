@@ -1,9 +1,11 @@
 
-from logreg_train3 import logreg_train
+from logreg_train3 import logreg_train, sigmoid
 import sys
 import logging
 from helper.read_data import import_data
-from prepare_data import nb_students, init_houses_file, save_student_prediction
+from prepare_data import nb_students, init_houses_file, save_student_prediction, select_training_data_features, normalize_features_predict
+import numpy as np
+from helper.read_data import read_dataset3
 """
 TO DO:
 PREPARE ALL DATAS
@@ -24,13 +26,7 @@ bias pour chaque maison
 
 il faut réutiliser les mêmes processus pour préparer les données que dans le training. 
 
-    preds = np.zeros(nb_training_exmpl)
 
-    for i in range(nb_training_exmpl):
-        z = np.dot(weight, training_data_features[i]) + biais
-        g = sigmoid(z)
-
-        preds[i] = g
 
     return preds
 
@@ -42,54 +38,70 @@ il faut réutiliser les mêmes processus pour préparer les données que dans le
 
 """
 
-def logreg_predict(list_houses, means, stds):
+def logreg_predict(list_houses, list_courses, means, stds):
     ##uses the final values of wight and bias to compute the final model's output for each training exemple and return 
     ## retunr predicted cprobability each training exemple"""
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 3:
         logging.critical('Usage: ./histogram [Dataset path]')
         return
     else:
         logging.info(f"Histogram Dataset source: {sys.argv[1]}")
 
     #prepare datas:
-    prediction_data = import_data(sys.argv[2])
-    #see if values = nan??
-    nb_stud = nb_students(prediction_data)
-    house_prob = []
-    index = 0
+    grades_data = get_grades_data(list_courses, means, stds)
+    nb_stud = grades_data.shape[0]
+    houses_biais, houses_weights = read_weights("weights.csv", list_houses, list_courses)
+    
     init_houses_file("houses.csv")
 
-    #import weights and bias
-    #use stds and means
-    #list_course???
-    print("nb stud: ", nb_stud)
-
     for student in range(nb_stud):
-        #student_data = get_student_prediction_data(prediction_data)
-        for house in list_houses:
-            continue
-            #probability = prediction(house, ....)
-            #house_prob[].append(probability)
-        #chosen_house = 
-        #house_prob.empty()
-        save_student_prediction("houses.csv",index, "Herbert")
-        index += 1
+        student_grade = grades_data[student]
+        house_prob = np.zeros(len(list_houses))
+        for house_index in range(len(list_houses)):
+            probability = predict(student_grade, houses_weights[house_index], houses_biais[house_index])
+            house_prob[house_index] = probability
+        student_prediction = most_probable_house(house_prob, list_houses)
+        save_student_prediction("houses.csv",student, student_prediction)
     return
-'''
-def get_student_prediction_data(prediction_data):
+
+#ok
+def get_grades_data(list_courses, means, stds) -> np.ndarray:
+    prediction_data = import_data(sys.argv[2])
+    students_grades = select_training_data_features(prediction_data)
+    ##CHECK IF NB COURSES IN TEST AND TRAIN ARE THE SAME
+    students_grades = normalize_features_predict(students_grades, means, stds)
+    return students_grades
+
+def read_weights(path: str, list_houses: list[str], list_courses: list[str]) -> tuple[np.ndarray, np.ndarray]:
+    houses_biais = np.zeros(len(list_houses))
+    houses_weights = np.zeros((len(list_houses), len(list_courses)))
+    data = read_dataset3(path)
+    for i, house in enumerate(list_houses):
+
+        if house not in data["House"]:
+            raise ValueError(f"No weights found for house: {house}")
+        row = data["House"].index(house)
+        houses_biais[i] = float(data["Bias"][row])
+        for j, course in enumerate(list_courses):
+            houses_weights[i, j] = float(data[course][row])
+    return houses_biais, houses_weights
+
 
 def most_probable_house(house_prob, list_house):
-    chosen_house = 0
-    for i in list_house:
-        if house_prob[i] > chosen_house:
-            chosen_house = i
+    chosen_index = 0
 
-    chosen_house = max_house
+    for i in range(len(list_house)):
+        if house_prob[i] > house_prob[chosen_index]:
+            chosen_index = i
 
-def prediction():
-    #algo important. 
+    return list_house[chosen_index]
 
-'''
+    
+def predict(student_grades: np.array, house_weights: np.array, house_biais: float) -> float: 
+    z = np.dot(house_weights, student_grades) + house_biais
+    probability = sigmoid(z)
+    return float(probability)
+
 if __name__ == "__main__":
-    list_houses, means, stds = logreg_train()
-    logreg_predict(list_houses, means, stds)
+    list_houses, list_course, means, stds = logreg_train()
+    logreg_predict(list_houses, list_course, means, stds)

@@ -1,0 +1,24 @@
+import numpy as np
+from sklearn.metrics import accuracy_score
+from predict import predict
+from logreg_train3 import logreg_train
+from predict import logreg_predict
+from helper.read_data import read_dataset3
+import sys
+def test_accuracy():
+
+    list_houses, list_course, means, stds = logreg_train()
+    logreg_predict(list_houses, list_course, means, stds)
+
+    predictions_data = read_dataset3("houses.csv")
+    y_pred = predictions_data["Hogwarts House"]
+    print(y_pred)
+    data_train = read_dataset3(sys.argv[1])
+    y_true = data_train["Hogwarts House"]
+
+    final_accuracy_score = accuracy_score(y_true, y_pred)
+    print("accuracy sklearn: ", final_accuracy_score)
+
+
+if __name__ == "__main__":
+    test_accuracy()

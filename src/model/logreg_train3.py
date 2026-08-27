@@ -82,7 +82,6 @@ def logreg_train():
 
     #learning_rate = STEPS A vérifier
     learning_rate = get_learning_rate()
-    print(sys.argv)
 
     print("itarations: ",  iterations, "learning_rate: ", learning_rate)
     
@@ -104,7 +103,7 @@ def logreg_train():
     training_data_features, means, std = normalize_features(training_data_features)
     for i in range(len(training_data_features)):
         np.set_printoptions(suppress=True, precision=3, linewidth=200)
-        print(training_data_features[i])
+        #print(training_data_features[i])
     
 ##résultats sur lesquels on va venir s entrainer. 
     houses_labels = data["Hogwarts House"]
@@ -135,7 +134,7 @@ def logreg_train():
         history[house] = cost_history
 
     draw_history2(history, iterations, learning_rate, list_houses) 
-    return list_houses, means, std
+    return list_houses, list_courses, means, std
 
 def sigmoid(z) -> float :
     #return float between 0.0 and 1.0 probability

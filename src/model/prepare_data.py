@@ -58,11 +58,9 @@ def get_learning_rate() -> float:
         return float(sys.argv[4])
     return 0.01
 
-#OK
+#OK arrah student course. 
 def select_training_data_features(data: dict[str, list[str]])-> np.ndarray:
-    #retourne un tableau [étudiant][note], les valeurs manquantes
-    #étant remplacées par la médiane de leur colonne (cours)
-
+    #retourne un tableau [étudiant][note], 
     grades = []
     course_means = {}
     
@@ -112,7 +110,26 @@ def normalize_features(features: np.ndarray):
     return normalized, means, stds
 
     
+def normalize_features_predict(features: np.ndarray, means, stds):
+    #valeur normalisée = (value - mean) / std
 
+    nb_features = features.shape[1]
+    normalized = np.zeros(features.shape)
+
+    for j in range(features.shape[1]):
+        branch_column = features[:, j]
+        branch_values = branch_column.tolist()
+
+        if stds[j] == 0 or np.isnan(stds[j]):
+            normalized[:, j] = 0
+            continue
+        for i in range(features.shape[0]):
+            value = features[i, j]
+            if np.isnan(value):
+                normalized[i, j]  = 0
+            else:
+                normalized[i, j]  = (value - means[j]) / stds[j]
+    return normalized
 
 
 
