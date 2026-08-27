@@ -2,6 +2,7 @@ DATA_TEST = src/datasets/dataset_test.csv
 DATA_TRAIN = src/datasets/dataset_train.csv
 DATA_DUMMY = src/datasets/dummy.csv
 DATA_DUMMY_2 = src/datasets/dummy2.csv
+DATA_DUMMY_TEST = src/datasets/dummy_test.csv
 
 PYTHON = venv/bin/python3
 PIP = venv/bin/pip
@@ -31,10 +32,10 @@ train2:
 	$(PYTHON) src/model/logreg_train2.py $(DATA_TRAIN)
 
 train3:
-	$(PYTHON) src/model/logreg_train3.py $(DATA_DUMMY)
+	$(PYTHON) src/model/logreg_train3.py $(DATA_TRAIN) $(DATA_DUMMY_TEST) $(ARGS)
 
 predict:
-	$(PYTHON) src/model/predict.py $(DATA_TRAIN)
+	$(PYTHON) src/model/predict.py $(DATA_DUMMY) $(DATA_DUMMY_TEST) $(ARGS)
 
 require:
 	$(PIP) freeze > requirements.txt

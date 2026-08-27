@@ -1,9 +1,9 @@
 import csv
 import numpy as np
 import sys
-from helper.read_data import nb_students, get_courses_list, course_data
+from helper.read_data import nb_students, get_courses_list, course_data, get_houses_list
 import describe.count_mean_std as cal
-
+import math
 
 def get_binary_labels_for_house(houses_labels: list[str], current_house: str) -> np.ndarray:
     training_data_labels = np.zeros(len(houses_labels), dtype=int)
@@ -12,12 +12,18 @@ def get_binary_labels_for_house(houses_labels: list[str], current_house: str) ->
             training_data_labels[i] = 1
     return training_data_labels
 
-
 def init_weights_file(path: str, courses: list[str]) -> None:
     with open(path, "w", newline="") as file:
         writer = csv.writer(file)
 
         header = ["House", "Bias"] + courses
+        writer.writerow(header)
+
+def init_houses_file(path: str) -> None:
+    with open(path, "w", newline="") as file:
+        writer = csv.writer(file)
+
+        header = ["Index", "Hogwarts House"]
         writer.writerow(header)
 
 def save_house_weights(
@@ -32,20 +38,28 @@ def save_house_weights(
         row = [house, bias] + weights.tolist()
         writer.writerow(row)
 
+def save_student_prediction(
+    path: str,
+    index: str,
+    house: str
+) -> None:
+    with open(path, "a", newline="") as file:
+        writer = csv.writer(file)
+        row = [index, house]
+        writer.writerow(row)
+
 def get_iterations() -> int:
-    if len(sys.argv) == 3:
-        return int(sys.argv[2])
+    if len(sys.argv) >= 4:
+        return int(sys.argv[3])
     return 1000
 
 def get_learning_rate() -> float:
-    if len(sys.argv) == 4:
-        return int(sys.argv[3])
+    if len(sys.argv) == 5:
+        return float(sys.argv[4])
     return 0.01
 
-
-# a refaire
-
-def select_training_data_features(data):
+#OK
+def select_training_data_features(data: dict[str, list[str]])-> np.ndarray:
     #retourne un tableau [étudiant][note], les valeurs manquantes
     #étant remplacées par la médiane de leur colonne (cours)
 
@@ -63,45 +77,49 @@ def select_training_data_features(data):
         student_grades = []
         for course in list_course:
             grade = data[course][student]
-            if grade == "nan":
-                grade = course_means[course]
+    #        if grade == "nan":
+    #            grade = course_means[course]
             student_grades.append(float(grade))
         grades.append(student_grades)
 
     training_data_features = np.array(grades, dtype=float)
-
     return training_data_features
 
+#means and stds return for prediction
+def normalize_features(features: np.ndarray):
+    #valeur normalisée = (value - mean) / std
 
-"""
-def select_training_data_features(data):
-    #retourne un tableau [étudiant][note], les valeurs manquantes
-    #étant remplacées par la médiane de leur colonne (cours)
+    nb_features = features.shape[1]
+    normalized = np.zeros(features.shape)
+    means = np.zeros(nb_features)
+    stds = np.zeros(nb_features)
 
-    # 1. on garde les colonnes qui sont des features (pas dans SKIP)
-    feature_cols = [col for col in data if col not in SKIP]
+    for j in range(features.shape[1]):
+        branch_column = features[:, j]
+        branch_values = branch_column.tolist()
+        means[j] = cal.cal_mean(branch_values)
+        count = cal.cal_count(branch_values)
+        stds[j] = cal.cal_std(branch_values, count, means[j])
+        if stds[j] == 0 or np.isnan(stds[j]):
+            normalized[:, j] = 0
+            continue
+        for i in range(features.shape[0]):
+            value = features[i, j]
+            if np.isnan(value):
+                normalized[i, j]  = 0
+            else:
+                normalized[i, j]  = (value - means[j]) / stds[j]
+    return normalized, means, stds
 
-    # 2. on construit chaque colonne nettoyée
-    cleaned_cols = []
-    for col in feature_cols:
-        # tableau float avec np.nan à la place des None
-        colonne = np.array(
-            [np.nan if v is None else float(v) for v in data[col]],
-            dtype=float,
-        )
-        #!!! mean c'est pas median!!
-        col_median = cal.cal_mean(colonne)
-        # on bouche les trous avec cette médiane
-        colonne[np.isnan(colonne)] = col_median
-        cleaned_cols.append(colonne)
+    
 
-    # 3. cleaned_cols est orienté colonnes -> .T pour passer en [étudiant][note]
-    training_data_features = np.array(cleaned_cols).T
 
-    return training_data_features
 
+
+
+'''
 # a refaire....
-def normalize_features(features):
+def normalize_features(features: np.ndarray):
     #standardise chaque colonne : (x - moyenne) / écart-type,
     #avec les fonctions maison. retourne (features_normalisées, moyennes, ecarts_types)
 
@@ -125,25 +143,4 @@ def normalize_features(features):
         stds[j] = std
         normalized[:, j] = (colonne - mean) / std
 
-    return normalized, means, stds
-
-
-def select_training_data_features(data):
-
-    selected_courses = [col for col in data if col in COURSES]
-
-    nb_students = len(data[selected_courses[0]])
-
-    print(selected_courses)
-    print(COURSES)
-
-    rows = []
-    for i in range(nb_students):
-        row = [data[col][i] for col in selected_courses]
-        rows.append(row)
-
-    #normalized
-
-    return np.array(rows)
-
-"""
+    return normalized, means, stds'''
