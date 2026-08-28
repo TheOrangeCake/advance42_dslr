@@ -128,7 +128,7 @@ def nb_students(data: dict[str, list[str]]) -> int:
 
 # get data by branch in numpy
 #for part 1 and 2
-def course_data(data: dict[str, list[str]], branch: str):
+def course_data(data: dict[str, list[str]], branch: str)-> np.ndarray:
   if branch not in data:
     raise KeyError("This course is not in data set")
   return np.array(data[branch], dtype=float)

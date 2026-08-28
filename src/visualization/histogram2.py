@@ -8,6 +8,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 from helper.read_data import read_dataset2  # noqa: E402
 from helper.plot import save_fig  # noqa: E402
 import describe.count_mean_std as cal  # noqa: E402
+import describe.bonus_nan_range
 
 coloredlogs.install()
 
@@ -44,7 +45,7 @@ def filter_non(values):
 def homogeneity_index(data, course):
     mean_houses = []
     std_houses  = []
-    dif_max_min = cal.diff_max_min(data[course])
+    dif_max_min = cal.cal_range(data[course])
     if dif_max_min == 0 or dif_max_min != dif_max_min or dif_max_min in (float('inf'), float('-inf')):
         return float('nan')
     for house in HOUSES:
@@ -56,8 +57,8 @@ def homogeneity_index(data, course):
         mean_houses.append(mean)
         std_houses.append(std)
 
-    mean_spread = cal.diff_max_min(mean_houses)
-    std_spread = cal.diff_max_min(std_houses)
+    mean_spread = cal.cal_range(mean_houses)
+    std_spread = cal.cal_range(std_houses)
 
     #normalize
     mean_spread_norm = mean_spread / dif_max_min

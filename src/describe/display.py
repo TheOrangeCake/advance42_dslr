@@ -3,6 +3,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 from helper.models import Feature  # noqa: E402
 
+
 display_name = {
     'count': 'Count',
     'mean': 'Mean',
@@ -16,6 +17,7 @@ display_name = {
     'nan': 'NaN'
 }
 
+
 def display(features: list[Feature]) -> None:
     if not features:
         return
@@ -28,6 +30,7 @@ def display(features: list[Feature]) -> None:
     print_features(col_len, features, spacing)
     print_stats(col_len, features, spacing)
 
+
 def cal_col_len(col_len: list[int], features: list[Feature]) -> None:
     col_len.append(longest(display_name.values()))
     for feature in features:
@@ -38,6 +41,7 @@ def cal_col_len(col_len: list[int], features: list[Feature]) -> None:
                 w = len(f"{v:.6f}")
         col_len.append(w)
 
+
 def print_features(
         col_len: list[int],
         features: list[Feature],
@@ -47,6 +51,7 @@ def print_features(
     for index, feature in enumerate(features):
         print(f"{spacing}{feature.name:>{col_len[index + 1]}}", end="")
     print()
+
 
 def print_stats(
         col_len: list[int],
@@ -61,6 +66,7 @@ def print_stats(
         for index, v in enumerate(values):
             print(f"{spacing}{v:>{col_len[index + 1]}.6f}", end="")
         print()
+
 
 def longest(strings: list[str]) -> int:
     result = 0
