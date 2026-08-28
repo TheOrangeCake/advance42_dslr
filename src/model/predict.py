@@ -1,5 +1,5 @@
 
-from logreg_train3 import logreg_train, sigmoid
+from logreg_train import logreg_train, sigmoid
 import sys
 import logging
 from helper.read_data import import_data

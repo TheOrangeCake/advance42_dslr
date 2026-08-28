@@ -13,7 +13,7 @@ FLAKE = venv/bin/flake8
 all: describe histogram scatter train
 
 describe:
-	$(PYTHON) src/describe/describe.py $(DATA_DUMMY)
+	$(PYTHON) src/describe/describe.py $(DATA_TRAIN)
 
 histogram:
 	$(PYTHON) src/visualization/histogram.py $(DATA_TRAIN)
@@ -28,19 +28,13 @@ pair:
 	$(PYTHON) src/visualization/pair_plot.py $(DATA_TRAIN)
 
 train:
-	$(PYTHON) src/model/logreg_train.py $(DATA_TRAIN)
-
-train2:
-	$(PYTHON) src/model/logreg_train2.py $(DATA_TRAIN)
-
-train3:
-	$(PYTHON) src/model/logreg_train3.py $(DATA_TRAIN) $(DATA_DUMMY_TEST) $(ARGS)
+	$(PYTHON) src/model/logreg_train.py $(DATA_TRAIN) $(DATA_DUMMY_TEST) $(ARGS)
 
 predict:
 	$(PYTHON) src/model/predict.py $(DATA_DUMMY_2) $(DATA_DUMMY_TEST) $(ARGS)
 
 accuracy:
-	$(PYTHON) src/model/accuracy.py $(DATA_ACCURACY_TRAIN) $(DATA_ACCURACY_TEST) $(ARGS)
+	$(PYTHON) src/model/accuracy.py $(DATA_TRAIN) $(DATA_ACCURACY_TEST) $(ARGS)
 
 require:
 	$(PIP) freeze > requirements.txt

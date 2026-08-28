@@ -49,31 +49,6 @@ def only_numeric(data: dict[str, list[str]]) -> dict[str, list[float]]:
     return result
 
 
-# proposal Sylvie
-# dictionnary with lists str or float
-def read_dataset2(data_train: str):
-    try:
-        with open(data_train, mode='r') as file:
-            header = file.readline().strip().split(',')
-            data = {col: [] for col in header}
-            
-            for line in file:
-                values = line.strip().split(',')
-                for col, val in zip(header, values):
-                    # Si la valeur est vide, on garde None (ou NaN)
-                    if val == '':
-                        data[col].append(None)
-                    else:
-                        try:
-                            data[col].append(float(val))
-                        except ValueError:
-                            data[col].append(val)
-    
-    except IOError as ioe:
-        logging.critical(f"Error opening file: {ioe}")
-        sys.exit(-1)
-    
-    return data
 
 '''
 STRATEGY:
@@ -89,7 +64,6 @@ by student.
 check what is needed in all the project. 
 '''
 
-##load datas???
 def import_data(data_train: str)-> dict[str, list[str]]:
     data = read_dataset3(data_train)
     remove_useless_data(data)
@@ -122,7 +96,6 @@ def remove_useless_data(data: dict[str, list[str]]) -> None:
     data.pop("Best Hand")
     return data
     
-
 #then it is easier to convert empty values
 def empty_values(data: dict[str, list[str]]) -> None:
   for column in data:
@@ -165,10 +138,32 @@ def get_students_grades(data: dict[str, list[str]]):
     for i in range(len(data[1])):
         for course in course_list:
             data[course][i]
-#get student datas:
-#def get_students_data(data: dict[str, list[str]])
-#house
-#grades
 
+"""
 
-#get all students in a house. 
+# proposal Sylvie
+# dictionnary with lists str or float
+def read_dataset2(data_train: str):
+    try:
+        with open(data_train, mode='r') as file:
+            header = file.readline().strip().split(',')
+            data = {col: [] for col in header}
+            
+            for line in file:
+                values = line.strip().split(',')
+                for col, val in zip(header, values):
+                    # Si la valeur est vide, on garde None (ou NaN)
+                    if val == '':
+                        data[col].append(None)
+                    else:
+                        try:
+                            data[col].append(float(val))
+                        except ValueError:
+                            data[col].append(val)
+    
+    except IOError as ioe:
+        logging.critical(f"Error opening file: {ioe}")
+        sys.exit(-1)
+    
+    return data
+"""

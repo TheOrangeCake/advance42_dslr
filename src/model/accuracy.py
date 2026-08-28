@@ -1,11 +1,15 @@
 import numpy as np
 from sklearn.metrics import accuracy_score
 from predict import predict
-from logreg_train3 import logreg_train
+from logreg_train import logreg_train
 from predict import logreg_predict
 from helper.read_data import read_dataset3
 import sys
+from helper.prepare_accurary_data import create_accuracy_test_file
+
 def test_accuracy():
+
+    create_accuracy_test_file(sys.argv[1], sys.argv[2])
 
     list_houses, list_course, means, stds = logreg_train()
     logreg_predict(list_houses, list_course, means, stds)
