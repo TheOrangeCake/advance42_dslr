@@ -81,10 +81,6 @@ read datas and keep all in str.
 then extract numpy with what you need.
 but always keep all names somewhere
 
-functions:
-read data set
-remove unused data index?, first name, last name, birthday, best hand. 
-
 select datas and return numpy: 
 by branch
 by house
