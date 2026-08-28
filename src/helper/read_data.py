@@ -6,6 +6,20 @@ import numpy as np
 
 coloredlogs.install()
 
+'''
+STRATEGY:
+read datas and keep all in str. 
+then extract numpy with what you need.
+but always keep all names somewhere
+
+select datas and return numpy: 
+by branch
+by house
+by student. 
+
+check what is needed in all the project. 
+'''
+
 #enleve colone non numeric check
 def is_numeric_column(values: list[str]) -> bool:
     has_value = False
@@ -33,19 +47,7 @@ def only_numeric(data: dict[str, list[str]]) -> dict[str, list[float]]:
 
 
 
-'''
-STRATEGY:
-read datas and keep all in str. 
-then extract numpy with what you need.
-but always keep all names somewhere
 
-select datas and return numpy: 
-by branch
-by house
-by student. 
-
-check what is needed in all the project. 
-'''
 # this is the good one
 def import_data(data_train: str)-> dict[str, list[str]]:
     data = read_dataset3(data_train)
@@ -131,33 +133,3 @@ def get_house_course_grades(data: dict[str, list[str]], house: str, branch: str)
       if data["Hogwarts House"][i] == house
   ]
   return np.array(grades, dtype=float)
-
-
-"""
-
-# proposal Sylvie
-# dictionnary with lists str or float
-def read_dataset2(data_train: str):
-    try:
-        with open(data_train, mode='r') as file:
-            header = file.readline().strip().split(',')
-            data = {col: [] for col in header}
-            
-            for line in file:
-                values = line.strip().split(',')
-                for col, val in zip(header, values):
-                    # Si la valeur est vide, on garde None (ou NaN)
-                    if val == '':
-                        data[col].append(None)
-                    else:
-                        try:
-                            data[col].append(float(val))
-                        except ValueError:
-                            data[col].append(val)
-    
-    except IOError as ioe:
-        logging.critical(f"Error opening file: {ioe}")
-        sys.exit(-1)
-    
-    return data
-"""

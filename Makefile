@@ -10,7 +10,7 @@ PYTHON = venv/bin/python3
 PIP = venv/bin/pip
 FLAKE = venv/bin/flake8
 
-all: describe histogram scatter train pair accuracy
+all: describe histogram scatter pair accuracy
 
 describe:
 	$(PYTHON) src/describe/describe.py $(DATA_TRAIN)
@@ -25,10 +25,10 @@ pair:
 	$(PYTHON) src/visualization/pair_plot.py $(DATA_TRAIN)
 
 train:
-	$(PYTHON) src/model/logreg_train.py $(DATA_TRAIN) $(DATA_DUMMY_TEST) $(ARGS)
+	$(PYTHON) src/model/logreg_train.py $(DATA_TRAIN) $(DATA_TEST) $(ARGS)
 
 predict:
-	$(PYTHON) src/model/predict.py $(DATA_DUMMY_2) $(DATA_DUMMY_TEST) $(ARGS)
+	$(PYTHON) src/model/predict.py $(DATA_TRAIN) $(DATA_TEST) $(ARGS)
 
 accuracy:
 	$(PYTHON) src/model/accuracy.py $(DATA_TRAIN) $(DATA_ACCURACY_TEST) $(ARGS)

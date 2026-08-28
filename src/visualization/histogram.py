@@ -10,7 +10,9 @@ from helper.plot import save_fig  # noqa: E402
 import describe.count_mean_std as cal  # noqa: E402
 from describe.bonus_nan_range import cal_range
 
+
 coloredlogs.install()
+
 
 COLORS = {
     "Gryffindor": "red",
@@ -23,18 +25,19 @@ COLORS = {
 def filter_non(values):
     return [v for v in values if v is not None and v == v]
 
-# calculate the spread of each house mean and std. 
-# normalize it to have the same scale
-# add it. More the spread of mean and std are large, more the index show it is not homogene
+
+# calculate the spread of each house mean and std.
+# normalize it to have the same scale add it.
+# More the spread of mean and std are large, more the index is not homogene
 def homogeneity_index(data, course, list_houses):
     mean_houses = []
-    std_houses  = []
-    dif_max_min = cal_range(course_data(data,course))
+    std_houses = []
+    dif_max_min = cal_range(course_data(data, course))
     if dif_max_min == 0 or dif_max_min != dif_max_min or dif_max_min in (float('inf'), float('-inf')):
         return float('nan')
     for house in list_houses:
         house_course_data = get_house_course_grades(data, house, course)
-        house_course_date = filter_non(house_course_data)
+        house_course_data = filter_non(house_course_data)
         count = cal.cal_count(house_course_data)
         mean = cal.cal_mean(house_course_data)
         std = cal.cal_std(house_course_data, count, mean)
@@ -68,7 +71,6 @@ def histogram() -> None:
 
     data = import_data(sys.argv[1])
     house_col = data.get("Hogwarts House")
-    print(house_col)
     #ou ca se trouve dans le fichier de sortie
     if not house_col:
         logging.critical('Missing or empty "Hogwarts House" column')

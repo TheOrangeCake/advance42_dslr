@@ -5,7 +5,7 @@ import logging
 from pathlib import Path
 import coloredlogs
 sys.path.append(str(Path(__file__).parent.parent))
-from helper.read_data import import_data, get_houses_list, get_house_course_grades  # noqa: E402
+from helper.read_data import import_data, get_houses_list, get_house_course_grades, get_courses_list  # noqa: E402
 from helper.plot import save_fig  # noqa: E402
 from histogram import filter_non
 coloredlogs.install()
@@ -16,7 +16,6 @@ COLORS = {
     "Hufflepuff": "yellow",
     "Slytherin":  "black",
 }
-COURSES = ["Arithmancy", "Astronomy", "Herbology", "Defense Against the Dark Arts", "Divination", "Muggle Studies", "Ancient Runes", "History of Magic", "Transfiguration", "Potions", "Care of Magical Creatures", "Charms", "Flying"]
 
 def pair_plot():
     #read data
@@ -28,14 +27,15 @@ def pair_plot():
     data = import_data(sys.argv[1])
 
     list_houses: list[str] = get_houses_list(data)
+    list_courses : list[str] = get_courses_list(data)
 
     #init graphic
     plot = 1
-    figure, axes = graph.subplots(len(COURSES), len(COURSES), figsize=(20,20))
+    figure, axes = graph.subplots(len(list_courses), len(list_courses), figsize=(20,20))
     
     #loop1 for each feat (course)
-    for row, course_y in enumerate(COURSES):
-        for col, course_x in enumerate(COURSES):
+    for row, course_y in enumerate(list_courses):
+        for col, course_x in enumerate(list_courses):
 
             # name on axes
             axis = axes[row][col]
