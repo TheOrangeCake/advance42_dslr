@@ -21,6 +21,7 @@ COLORS = {
     "Slytherin":  "green",
 }
 
+
 # see histogram2 for proposal Sylvie
 def histogram() -> None:
     if len(sys.argv) != 2:
@@ -31,7 +32,7 @@ def histogram() -> None:
 
     data = read_dataset(sys.argv[1])
     house_col = data.get("Hogwarts House")
-    #ou ca se trouve dans le fichier de sortie
+    # ou ca se trouve dans le fichier de sortie
     if not house_col:
         logging.critical('Missing or empty "Hogwarts House" column')
         return
@@ -72,4 +73,4 @@ def histogram() -> None:
 
 if __name__ == "__main__":
     histogram()
-    #histogram2()
+    # histogram2()

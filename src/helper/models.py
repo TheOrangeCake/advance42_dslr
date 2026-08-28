@@ -2,7 +2,7 @@ class Feature():
     def __init__(self, name):
         self.name = name
     name: str
-    #syl dpoit faire ça 
+    # syl dpoit faire ça
     count: float
     mean: float
     std: float

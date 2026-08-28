@@ -10,16 +10,16 @@ from helper.plot import save_fig  # noqa: E402
 
 coloredlogs.install()
 
+
 def scatter() -> None:
     if len(sys.argv) != 2:
         logging.critical('Usage: ./scatter [Dataset path]')
         return
     else:
         logging.info(f"Scatter Dataset source: {sys.argv[1]}")
-    
+
     data = import_data(sys.argv[1])
     data.pop("Hogwarts House")
-    #data = read_dataset(sys.argv[1])
 
     per_fig = 9
     count = 0

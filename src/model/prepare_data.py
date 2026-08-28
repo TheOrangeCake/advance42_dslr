@@ -1,16 +1,24 @@
 import csv
 import numpy as np
 import sys
-from helper.read_data import nb_students, get_courses_list, course_data, get_houses_list
+from helper.read_data import (
+    nb_students,
+    get_courses_list,
+    course_data,
+    read_dataset,
+)
 import describe.count_mean_std as cal
-import math
 
-def get_binary_labels_for_house(houses_labels: list[str], current_house: str) -> np.ndarray:
+
+def get_binary_labels_for_house(
+    houses_labels: list[str], current_house: str
+) -> np.ndarray:
     training_data_labels = np.zeros(len(houses_labels), dtype=int)
     for i in range(len(houses_labels)):
         if houses_labels[i] == current_house:
             training_data_labels[i] = 1
     return training_data_labels
+
 
 def init_weights_file(path: str, courses: list[str]) -> None:
     with open(path, "w", newline="") as file:
@@ -19,12 +27,14 @@ def init_weights_file(path: str, courses: list[str]) -> None:
         header = ["House", "Bias"] + courses
         writer.writerow(header)
 
+
 def init_houses_file(path: str) -> None:
     with open(path, "w", newline="") as file:
         writer = csv.writer(file)
 
         header = ["Index", "Hogwarts House"]
         writer.writerow(header)
+
 
 def save_house_weights(
     path: str,
@@ -38,6 +48,7 @@ def save_house_weights(
         row = [house, bias] + weights.tolist()
         writer.writerow(row)
 
+
 def save_student_prediction(
     path: str,
     index: str,
@@ -48,22 +59,24 @@ def save_student_prediction(
         row = [index, house]
         writer.writerow(row)
 
+
 def get_iterations() -> int:
     if len(sys.argv) >= 4:
         return int(sys.argv[3])
     return 1000
+
 
 def get_learning_rate() -> float:
     if len(sys.argv) == 5:
         return float(sys.argv[4])
     return 0.01
 
-#OK arrah student course. 
-def select_training_data_features(data: dict[str, list[str]])-> np.ndarray:
-    #retourne un tableau [étudiant][note], 
+
+# OK arrah student course.
+def select_training_data_features(data: dict[str, list[str]]) -> np.ndarray:
+    # retourne un tableau [étudiant][note],
     grades = []
     course_means = {}
-    
 
     nb_stud = nb_students(data)
     list_course = get_courses_list(data)
@@ -83,9 +96,10 @@ def select_training_data_features(data: dict[str, list[str]])-> np.ndarray:
     training_data_features = np.array(grades, dtype=float)
     return training_data_features
 
-#means and stds return for prediction
+
+# means and stds return for prediction
 def normalize_features(features: np.ndarray):
-    #valeur normalisée = (value - mean) / std
+    # valeur normalisée = (value - mean) / std
 
     nb_features = features.shape[1]
     normalized = np.zeros(features.shape)
@@ -104,21 +118,18 @@ def normalize_features(features: np.ndarray):
         for i in range(features.shape[0]):
             value = features[i, j]
             if np.isnan(value):
-                normalized[i, j]  = 0
+                normalized[i, j] = 0
             else:
-                normalized[i, j]  = (value - means[j]) / stds[j]
+                normalized[i, j] = (value - means[j]) / stds[j]
     return normalized, means, stds
 
-    
-def normalize_features_predict(features: np.ndarray, means, stds):
-    #valeur normalisée = (value - mean) / std
 
-    nb_features = features.shape[1]
+def normalize_features_predict(features: np.ndarray, means, stds):
+    # valeur normalisée = (value - mean) / std
+
     normalized = np.zeros(features.shape)
 
     for j in range(features.shape[1]):
-        branch_column = features[:, j]
-        branch_values = branch_column.tolist()
 
         if stds[j] == 0 or np.isnan(stds[j]):
             normalized[:, j] = 0
@@ -126,38 +137,38 @@ def normalize_features_predict(features: np.ndarray, means, stds):
         for i in range(features.shape[0]):
             value = features[i, j]
             if np.isnan(value):
-                normalized[i, j]  = 0
+                normalized[i, j] = 0
             else:
-                normalized[i, j]  = (value - means[j]) / stds[j]
+                normalized[i, j] = (value - means[j]) / stds[j]
     return normalized
 
 
+def save_normalization(
+    path: str, courses: list[str], means: np.ndarray, stds: np.ndarray
+) -> None:
+    with open(path, "w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(["Course", "Mean", "Std"])
+        for course, mean, std in zip(courses, means, stds):
+            writer.writerow([course, mean, std])
 
 
-'''
-# a refaire....
-def normalize_features(features: np.ndarray):
-    #standardise chaque colonne : (x - moyenne) / écart-type,
-    #avec les fonctions maison. retourne (features_normalisées, moyennes, ecarts_types)
+def read_normalization(path: str) -> tuple[list[str], np.ndarray, np.ndarray]:
+    data = read_dataset(path)
+    means = np.array(data["Mean"], dtype=float)
+    stds = np.array(data["Std"], dtype=float)
+    return means, stds
 
-    nb_features = features.shape[1]
-    means = np.zeros(nb_features)
-    stds = np.zeros(nb_features)
-    normalized = np.zeros(features.shape)
 
-    for j in range(nb_features):
-        colonne = features[:, j]              # toutes les notes du cours j (numpy)
-        valeurs = list(colonne)               # -> liste Python pour tes fonctions
-
-        count = cal.cal_count(valeurs)
-        mean = cal.cal_mean(valeurs)
-        std = cal.cal_std(valeurs, count, mean)
-
-        if std == 0 or math.isnan(std):       # colonne constante / std invalide -> évite /0
-            std = 1
-
-        means[j] = mean
-        stds[j] = std
-        normalized[:, j] = (colonne - mean) / std
-
-    return normalized, means, stds'''
+def read_weights(
+    path: str,
+) -> tuple[list[str], list[str], np.ndarray, np.ndarray]:
+    data = read_dataset(path)
+    list_houses = data["House"]
+    list_courses = [c for c in data if c not in ("House", "Bias")]
+    houses_biais = np.array(data["Bias"], dtype=float)
+    houses_weights = np.zeros((len(list_houses), len(list_courses)))
+    for i in range(len(list_houses)):
+        for j, course in enumerate(list_courses):
+            houses_weights[i, j] = float(data[course][i])
+    return list_houses, list_courses, houses_biais, houses_weights

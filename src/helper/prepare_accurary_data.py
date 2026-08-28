@@ -33,7 +33,6 @@ import csv
 
 def create_accuracy_test_file(
     source_train: str,
-    destination_test: str
 ) -> None:
     with open(source_train, "r", newline="") as src:
         reader = csv.DictReader(src)
@@ -41,7 +40,8 @@ def create_accuracy_test_file(
         if reader.fieldnames is None:
             raise ValueError("Missing CSV header")
 
-        with open(destination_test, "w", newline="") as dst:
+        destination = "src/datasets/accuracy_dataset_test.csv"
+        with open(destination, "w", newline="") as dst:
             writer = csv.DictWriter(dst, fieldnames=reader.fieldnames)
             writer.writeheader()
 

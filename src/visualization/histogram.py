@@ -5,10 +5,16 @@ import logging
 from pathlib import Path
 import coloredlogs
 sys.path.append(str(Path(__file__).parent.parent))
-from helper.read_data import import_data, get_houses_list, get_courses_list, get_house_course_grades, course_data  # noqa: E402
+from helper.read_data import (  # noqa: E402
+    import_data,
+    get_houses_list,
+    get_courses_list,
+    get_house_course_grades,
+    course_data,
+)
 from helper.plot import save_fig  # noqa: E402
 import describe.count_mean_std as cal  # noqa: E402
-from describe.bonus_nan_range import cal_range
+from describe.bonus_nan_range import cal_range  # noqa: E402
 
 
 coloredlogs.install()
@@ -33,7 +39,11 @@ def homogeneity_index(data, course, list_houses):
     mean_houses = []
     std_houses = []
     dif_max_min = cal_range(course_data(data, course))
-    if dif_max_min == 0 or dif_max_min != dif_max_min or dif_max_min in (float('inf'), float('-inf')):
+    if (
+        dif_max_min == 0
+        or dif_max_min != dif_max_min
+        or dif_max_min in (float('inf'), float('-inf'))
+    ):
         return float('nan')
     for house in list_houses:
         house_course_data = get_house_course_grades(data, house, course)
@@ -47,12 +57,13 @@ def homogeneity_index(data, course, list_houses):
     mean_spread = cal_range(mean_houses)
     std_spread = cal_range(std_houses)
 
-    #normalize
+    # normalize
     mean_spread_norm = mean_spread / dif_max_min
     std_spread_norm = std_spread / dif_max_min
 
     index = mean_spread_norm + std_spread_norm
     return index
+
 
 def select_course(homogeneity_ind: dict[str, float], list_courses) -> str:
     choosen_course = list_courses[0]
@@ -71,7 +82,7 @@ def histogram() -> None:
 
     data = import_data(sys.argv[1])
     house_col = data.get("Hogwarts House")
-    #ou ca se trouve dans le fichier de sortie
+    # ou ca se trouve dans le fichier de sortie
     if not house_col:
         logging.critical('Missing or empty "Hogwarts House" column')
         return
@@ -85,18 +96,17 @@ def histogram() -> None:
     list_courses: list[str] = get_courses_list(data)
 
     # name = course. plus compréhensible
-    homogeneity_ind : dict[str, float] = {}
+    homogeneity_ind: dict[str, float] = {}
     for course in list_courses:
         homogeneity_ind[course] = homogeneity_index(data, course, list_houses)
 
-        #homogeneity_ind[course] = homogeneity_index(data, course)
+        # homogeneity_ind[course] = homogeneity_index(data, course)
         house_scores = {house: [] for house in list_houses}
 
         for house in list_houses:
-            
             house_scores[house] = get_house_course_grades(data, house, course)
             house_scores[house] = filter_non(house_scores[house])
-        #build graphics
+        # build graphics
         graph.subplot(4, 4, plot)
         graph.xlabel(f"H index: {homogeneity_ind[course]:.3f}")
         plot += 1
@@ -112,19 +122,23 @@ def histogram() -> None:
     handles, labels = graph.gca().get_legend_handles_labels()
     graph.figlegend(handles, labels, loc='lower right')
     save_fig("histogram", "histogram.png")
-    #graph.show()
+    # graph.show()
     graph.figure()
     plot = 1
-    #display the most homogeneous course
+    # display the most homogeneous course
     most_homogeneous_course = select_course(homogeneity_ind, list_courses)
     house_scores = {house: [] for house in list_houses}
     for house in list_houses:
-        house_scores[house] = get_house_course_grades(data, house, most_homogeneous_course)
+        house_scores[house] = get_house_course_grades(
+            data, house, most_homogeneous_course
+        )
         house_scores[house] = filter_non(house_scores[house])
-        #build graphics
+        # build graphics
     graph.subplot(1, 1, plot)
-    graph.xlabel(f"H index: {homogeneity_ind[most_homogeneous_course]:.3f} , {most_homogeneous_course}")
-    #plot += 1
+    graph.xlabel(
+        f"H index: {homogeneity_ind[most_homogeneous_course]:.3f} , "
+        f"{most_homogeneous_course}"
+    )
     for house in list_houses:
         graph.hist(
             house_scores[house],
@@ -142,4 +156,3 @@ def histogram() -> None:
 
 if __name__ == "__main__":
     histogram()
-

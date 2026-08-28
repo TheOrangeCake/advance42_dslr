@@ -25,13 +25,13 @@ pair:
 	$(PYTHON) src/visualization/pair_plot.py $(DATA_TRAIN)
 
 train:
-	$(PYTHON) src/model/logreg_train.py $(DATA_TRAIN) $(DATA_TEST) $(ARGS)
+	$(PYTHON) src/model/logreg_train.py $(DATA_TRAIN) $(ARGS)
 
 predict:
-	$(PYTHON) src/model/predict.py $(DATA_TRAIN) $(DATA_TEST) $(ARGS)
+	$(PYTHON) src/model/logreg_predict.py $(DATA_TRAIN)
 
 accuracy:
-	$(PYTHON) src/model/accuracy.py $(DATA_TRAIN) $(DATA_ACCURACY_TEST) $(ARGS)
+	$(PYTHON) src/model/accuracy.py $(DATA_TRAIN) $(ARGS)
 
 require:
 	$(PIP) freeze > requirements.txt
@@ -48,9 +48,5 @@ dummy:
 
 dummy2:
 	$(PYTHON) src/describe/describe.py $(DATA_DUMMY_2)
-
-# to erase
-data:
-	$(PYTHON) src/helper/newread.py $(DATA_DUMMY)
 
 .PHONY: all describe histogram scatter train require install flake dummy
