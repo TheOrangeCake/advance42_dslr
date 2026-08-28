@@ -22,7 +22,7 @@ def cal_nan_count(values: list[float]) -> float:
 # bonus range= difference entre valeur max et min
 # Range can be compared with 25%, 50% and 75% to spot outliners
 def cal_range(values: list[float]) -> float:
-    if not values:
+    if len(values) == 0:
         return float('nan')
     max_value = float('-inf')
     min_value = float('inf')

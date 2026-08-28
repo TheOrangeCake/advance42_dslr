@@ -63,7 +63,7 @@ by student.
 
 check what is needed in all the project. 
 '''
-
+# this is the good one
 def import_data(data_train: str)-> dict[str, list[str]]:
     data = read_dataset3(data_train)
     remove_useless_data(data)
@@ -138,6 +138,20 @@ def get_students_grades(data: dict[str, list[str]]):
     for i in range(len(data[1])):
         for course in course_list:
             data[course][i]
+
+# get grades for one house in one branch, in numpy
+def get_house_course_grades(data: dict[str, list[str]], house: str, branch: str) -> np.ndarray:
+  if branch not in data:
+    raise KeyError("This course is not in data set")
+  if "Hogwarts House" not in data:
+    raise KeyError("No Hogwarts House in data set")
+  grades = [
+      data[branch][i]
+      for i in range(len(data["Hogwarts House"]))
+      if data["Hogwarts House"][i] == house
+  ]
+  return np.array(grades, dtype=float)
+
 
 """
 

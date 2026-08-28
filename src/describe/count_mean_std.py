@@ -2,7 +2,7 @@ import math
 
 
 def cal_count(values: list[float]) -> float:
-    if not values:
+    if len(values) == 0:
         return float('nan')
     number = 0
     for value in values:
@@ -30,7 +30,7 @@ def cal_mean(values: list[float]) -> float:
 
 # standard deviation
 def cal_std(values: list[float], count: int, mean: float) -> float:
-    if not values or count < 2:
+    if len(values) == 0 or count < 2:
         return float('nan')
     squared_differences = 0.0
     for value in values:

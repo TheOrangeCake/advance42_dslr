@@ -15,11 +15,11 @@ all: describe histogram scatter train
 describe:
 	$(PYTHON) src/describe/describe.py $(DATA_TRAIN)
 
+histogram2:
+	$(PYTHON) src/visualization/histogramNG.py $(DATA_TRAIN)
+
 histogram:
 	$(PYTHON) src/visualization/histogram.py $(DATA_TRAIN)
-
-histogram2:
-	$(PYTHON) src/visualization/histogram2.py $(DATA_TRAIN)
 
 scatter:
 	$(PYTHON) src/visualization/scatter.py $(DATA_TRAIN)
