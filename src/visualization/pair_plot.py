@@ -5,12 +5,11 @@ import logging
 from pathlib import Path
 import coloredlogs
 sys.path.append(str(Path(__file__).parent.parent))
-from helper.read_data import read_dataset2  # noqa: E402
+from helper.read_data import import_data, get_houses_list, get_house_course_grades  # noqa: E402
 from helper.plot import save_fig  # noqa: E402
-from histogram2 import get_data_house_course, filter_non
+from histogram import filter_non
 coloredlogs.install()
 
-HOUSES = ["Gryffindor", "Ravenclaw", "Hufflepuff", "Slytherin"]
 COLORS = {
     "Gryffindor": "red",
     "Ravenclaw":  "orange",
@@ -26,7 +25,9 @@ def pair_plot():
         return
     else:
         logging.info(f"Pair Plot Dataset source: {sys.argv[1]}")
-    data = read_dataset2(sys.argv[1])
+    data = import_data(sys.argv[1])
+
+    list_houses: list[str] = get_houses_list(data)
 
     #init graphic
     plot = 1
@@ -45,9 +46,9 @@ def pair_plot():
                 axis.yaxis.set_label_coords(-0.15, 0.5)
 
             if course_x == course_y:
-                pair_histogramm(data, course_x, axis)
+                pair_histogramm(data, course_x, axis, list_houses)
             else:
-                pair_scatter(data, course_x, course_y, axis)
+                pair_scatter(data, course_x, course_y, axis, list_houses)
 
     handles, labels = graph.gca().get_legend_handles_labels()
     graph.figlegend(handles, labels, loc='lower right')
@@ -57,13 +58,13 @@ def pair_plot():
     #créer le fichier
     save_fig("pair_plot", "pair_plot.png")
 
-def pair_histogramm(data, course_x, axis):
-    house_scores = {house: [] for house in HOUSES}
+def pair_histogramm(data, course_x, axis, list_houses):
+    house_scores = {house: [] for house in list_houses}
 
-    for house in HOUSES:
-        house_scores[house] = get_data_house_course(data, house, course_x)
+    for house in list_houses:
+        house_scores[house] = get_house_course_grades(data, house, course_x)
         house_scores[house] = filter_non(house_scores[house])
-    for house in HOUSES:
+    for house in list_houses:
         axis.hist(
             house_scores[house],
             label=house,
@@ -72,10 +73,10 @@ def pair_histogramm(data, course_x, axis):
             edgecolor='black',
         )
 
-def pair_scatter(data, course_x, course_y, axis):
-    for house in HOUSES:
-        house_scores_x = get_data_house_course(data, house, course_x)
-        house_scores_y = get_data_house_course(data, house, course_y)
+def pair_scatter(data, course_x, course_y, axis, list_houses):
+    for house in list_houses:
+        house_scores_x = get_house_course_grades(data, house, course_x)
+        house_scores_y = get_house_course_grades(data, house, course_y)
         house_scores_x, house_scores_y = filter_non_pair(house_scores_x, house_scores_y)
         axis.scatter(house_scores_x, house_scores_y, s=10, color=COLORS[house], alpha=0.5)
     return

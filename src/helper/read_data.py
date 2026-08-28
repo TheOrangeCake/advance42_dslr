@@ -6,23 +6,6 @@ import numpy as np
 
 coloredlogs.install()
 
-#read the csv file return the columns
-#dict key feature like artimetic  herbology.... list les values
-def read_dataset(data_train: str) -> dict[str, list[str]]:
-    try:
-        with open(data_train, mode='r') as file:
-            reader = csv.DictReader(file)
-            fields = reader.fieldnames or []
-            columns = {name: [] for name in fields}
-            for row in reader:
-                for name in fields:
-                    data = (row[name] or '').strip()
-                    columns[name].append(data)
-        return columns
-    except IOError as ioe:
-        logging.critical(f"Error opening file: {ioe}")
-        sys.exit(-1)
-
 #enleve colone non numeric check
 def is_numeric_column(values: list[str]) -> bool:
     has_value = False
@@ -80,9 +63,6 @@ def read_dataset3(data_train: str) -> dict[str, list[str]]:
                 for name in fields:
                     data = (row[name] or '').strip()
                     columns[name].append(data)
-    ##déplacer ces deux. 
-       # data = remove_useless_data(columns)
-        #data = empty_values(data)
         return columns
     except IOError as ioe:
         logging.critical(f"Error opening file: {ioe}")
