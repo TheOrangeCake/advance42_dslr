@@ -61,6 +61,8 @@ def logreg_predict():
 def get_grades_data(list_courses, means, stds) -> np.ndarray:
     prediction_data = import_data(sys.argv[1])
     test_courses = get_courses_list(prediction_data)
+    if not list_courses:
+        logging.critical("Missing or empty courses in dataset")
     if test_courses != list_courses:
         raise ValueError(
             f"Course mismatch between test dataset and trained model.\n"

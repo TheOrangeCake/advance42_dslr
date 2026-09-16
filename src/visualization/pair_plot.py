@@ -35,7 +35,8 @@ def pair_plot():
 
     list_houses: list[str] = get_houses_list(data)
     list_courses: list[str] = get_courses_list(data)
-
+    if not list_courses:
+        logging.critical("Missing or empty courses in dataset")
     # init graphic
     figure, axes = graph.subplots(
         len(list_courses), len(list_courses), figsize=(20, 20)

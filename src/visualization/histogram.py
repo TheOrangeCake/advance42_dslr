@@ -94,7 +94,8 @@ def histogram() -> None:
         return
 
     list_courses: list[str] = get_courses_list(data)
-
+    if not list_courses:
+        logging.critical("Missing or empty courses in dataset")
     # name = course. plus compréhensible
     homogeneity_ind: dict[str, float] = {}
     for course in list_courses:

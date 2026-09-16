@@ -73,13 +73,8 @@ def read_dataset(data_train: str) -> dict[str, list[str]]:
 
 
 def remove_useless_data(data: dict[str, list[str]]) -> None:
-    data.pop("Index")
-    data.pop("First Name")
-    data.pop("Last Name")
-    data.pop("Birthday")
-    data.pop("Best Hand")
-    return data
-
+    for key in ["Index", "First Name", "Last Name", "Birthday", "Best Hand", "Julia"]:
+        data.pop(key, None)
 
 # then it is easier to convert empty values
 def empty_values(data: dict[str, list[str]]) -> None:

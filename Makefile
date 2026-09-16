@@ -28,10 +28,10 @@ train:
 	$(PYTHON) src/model/logreg_train.py $(DATA_TRAIN) $(ARGS)
 
 predict:
-	$(PYTHON) src/model/logreg_predict.py $(DATA_TRAIN)
+	$(PYTHON) src/model/logreg_predict.py $(DATA_TEST)
 
 accuracy:
-	$(PYTHON) src/model/accuracy.py $(DATA_TRAIN) $(ARGS)
+	$(PYTHON) src/model/accuracy.py $(DATA_TRAIN) $(DATA_TEST)
 
 require:
 	$(PIP) freeze > requirements.txt
@@ -49,4 +49,4 @@ dummy:
 dummy2:
 	$(PYTHON) src/describe/describe.py $(DATA_DUMMY_2)
 
-.PHONY: all describe histogram scatter train require install flake dummy
+.PHONY: all describe histogram scatter pair train predict accuracy require install flake dummy dummy2

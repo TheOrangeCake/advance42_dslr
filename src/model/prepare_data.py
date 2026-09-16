@@ -1,6 +1,7 @@
 import csv
 import numpy as np
 import sys
+import logging
 from helper.read_data import (
     nb_students,
     get_courses_list,
@@ -76,20 +77,23 @@ def get_learning_rate() -> float:
 def select_training_data_features(data: dict[str, list[str]]) -> np.ndarray:
     # retourne un tableau [étudiant][note],
     grades = []
-    course_means = {}
 
+#    try:
     nb_stud = nb_students(data)
-    list_course = get_courses_list(data)
-
-    for course in list_course:
-        course_means[course] = cal.cal_mean(course_data(data, course))
+#    except KeyError as error: 
+#        logging.critical(error)
+    if nb_stud == 0:
+        logging.critical("No student in dataset")
+        return np.empty((0,0))   
+    list_courses = get_courses_list(data)
+    if not list_courses:
+        logging.critical("Missing or empty courses in dataset")
+        return np.empty((0,0))   
 
     for student in range(nb_stud):
         student_grades = []
-        for course in list_course:
+        for course in list_courses:
             grade = data[course][student]
-    #        if grade == "nan":
-    #            grade = course_means[course]
             student_grades.append(float(grade))
         grades.append(student_grades)
 

@@ -21,7 +21,7 @@ def test_accuracy():
     predictions_data = read_dataset("houses.csv")
     y_pred = predictions_data["Hogwarts House"]
     # print(y_pred)
-    data_train = read_dataset(sys.argv[1])
+    data_train = read_dataset(sys.argv[2])
     y_true = data_train["Hogwarts House"]
 
     final_accuracy_score = accuracy_score(y_true, y_pred)

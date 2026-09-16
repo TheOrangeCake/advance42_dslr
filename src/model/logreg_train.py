@@ -107,6 +107,8 @@ def logreg_train():
         return
     # print(list_houses)
     list_courses: list[str] = get_courses_list(data)
+    if not list_courses:
+        logging.critical("Missing or empty courses in dataset")
     # print(list_courses)
 
     # grades for each student
@@ -139,7 +141,6 @@ def logreg_train():
 # one-vs-Rest
     init_weights_file("weights.csv", list_courses)
 
-    init_weights_file("weights.csv", list_courses)
     save_normalization("normalization.csv", list_courses, means, std)
     # Create history variable to store cost during training
     history = {}
