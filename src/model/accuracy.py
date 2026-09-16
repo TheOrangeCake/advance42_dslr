@@ -7,16 +7,12 @@ from helper.prepare_accurary_data import create_accuracy_test_file
 import logging
 
 
-def test_accuracy():
-    if len(sys.argv) < 2:
-        logging.critical('Usage: ./accuracy [Dataset path]')
-        return
-    else:
-        logging.info(f"Accuracy Dataset source: {sys.argv[1]}")
+def test_accuracy(dataset_train_path, dataset_test_path):
+
     create_accuracy_test_file(sys.argv[1])
 
-    logreg_train()
-    logreg_predict()
+    logreg_train(dataset_train_path)
+    logreg_predict(dataset_test_path)
 
     predictions_data = read_dataset("houses.csv")
     y_pred = predictions_data["Hogwarts House"]
@@ -29,4 +25,9 @@ def test_accuracy():
 
 
 if __name__ == "__main__":
-    test_accuracy()
+    if len(sys.argv) < 2:
+        logging.critical('Usage: ./accuracy [Dataset path]')
+        sys.exit(1)
+
+    logging.info(f"Accuracy Dataset source: {sys.argv[1]}, {sys.argv[2]}")
+    test_accuracy({sys.argv[1]}, {sys.argv[2]})

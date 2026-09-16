@@ -16,15 +16,11 @@ import numpy as np
 from pathlib import Path
 
 
-def logreg_predict():
+def logreg_predict(dataset_path, weights_path="weights.csv"):
     # uses the final values of wight and bias to compute the final
     # model's output for each training exemple and return
     # retunr predicted cprobability each training exemple"""
-    if len(sys.argv) < 2:
-        logging.critical('Usage: ./logreg_predict [Dataset path]')
-        return
-    else:
-        logging.info(f"Logreg Predict Dataset source: {sys.argv[1]}")
+
     weights_missing = not Path("weights.csv").exists()
     normalization_missing = not Path("normalization.csv").exists()
     if weights_missing or normalization_missing:
@@ -92,4 +88,9 @@ def predict(
 
 
 if __name__ == "__main__":
-    logreg_predict()
+    if len(sys.argv) < 2:
+        logging.critical('Usage: ./logreg_predict [Dataset path]')
+        sys.exit(1)
+    
+    logging.info(f"Logreg Predict Dataset source: {sys.argv[1]}")
+    logreg_predict(sys.argv[1])

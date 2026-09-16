@@ -83,19 +83,7 @@ COLORS = {
 # weight et biais c'est ce que le modèle apprends
 
 
-def logreg_train():
-    if len(sys.argv) < 2:
-        logging.critical('Usage: ./logreg_train [Dataset path]')
-        return
-    else:
-        logging.info(f"Logreg Train Dataset source: {sys.argv[1]}")
-
-    # itarations = EPOCH.
-    iterations = get_iterations()
-
-    # learning_rate = STEPS A vérifier
-    learning_rate = get_learning_rate()
-
+def logreg_train(dataset_path, iterations=1000, learning_rate=0.01):
     print("itarations: ",  iterations, "learning_rate: ", learning_rate)
 
     # prepare datas
@@ -263,4 +251,16 @@ def draw_history2(
 
 
 if __name__ == "__main__":
-    logreg_train()
+    if len(sys.argv) < 2:
+        logging.critical('Usage: ./logreg_train [Dataset path]')
+        sys.exit(1)
+
+    logging.info(f"Logreg Train Dataset source: {sys.argv[1]}")
+
+    # itarations = EPOCH.
+#    iterations = get_iterations()
+
+#    learning_rate = get_learning_rate()
+
+    # learning_rate = STEPS A vérifier
+    logreg_train(sys.argv[1])

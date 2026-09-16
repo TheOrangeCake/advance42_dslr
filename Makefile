@@ -31,7 +31,7 @@ predict:
 	$(PYTHON) src/model/logreg_predict.py $(DATA_TEST)
 
 accuracy:
-	$(PYTHON) src/model/accuracy.py $(DATA_TRAIN) $(DATA_TEST)
+	$(PYTHON) src/model/accuracy.py $(DATA_TRAIN) $(DATA_TEST) $(ARGS)
 
 require:
 	$(PIP) freeze > requirements.txt
