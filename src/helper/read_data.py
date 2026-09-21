@@ -55,6 +55,7 @@ def import_data(data_train: str) -> dict[str, list[str]]:
     empty_values(data)
     return data
 
+
 def read_dataset(data_train: str) -> dict[str, list[str]]:
     try:
         with open(data_train, mode='r') as file:
@@ -72,8 +73,9 @@ def read_dataset(data_train: str) -> dict[str, list[str]]:
 
 
 def remove_useless_data(data: dict[str, list[str]]) -> None:
-    for key in ["Index", "First Name", "Last Name", "Birthday", "Best Hand", "Julia"]:
+    for key in ["Index", "First Name", "Last Name", "Birthday", "Best Hand"]:
         data.pop(key, None)
+
 
 # then it is easier to convert empty values
 def empty_values(data: dict[str, list[str]]) -> None:
@@ -81,6 +83,7 @@ def empty_values(data: dict[str, list[str]]) -> None:
         for i in range(len(data[column])):
             if data[column][i] == "":
                 data[column][i] = "nan"
+
 
 # get courses list
 def get_courses_list(data: dict[str, list[str]]) -> list[str]:
@@ -93,6 +96,7 @@ def get_courses_list(data: dict[str, list[str]]) -> list[str]:
         raise ValueError("Missing or empty courses in dataset")
     return courses_list
 
+
 # get houses list
 def get_houses_list(data: dict[str, list[str]]) -> list[str]:
     houses_list = []
@@ -102,7 +106,7 @@ def get_houses_list(data: dict[str, list[str]]) -> list[str]:
         if house not in ("", "nan") and house not in houses_list:
             houses_list.append(house)
     if not houses_list:
-        raise ValueError('Missing or empty "Hogwarts House" column')    
+        raise ValueError('Missing or empty "Hogwarts House" column')
     return houses_list
 
 

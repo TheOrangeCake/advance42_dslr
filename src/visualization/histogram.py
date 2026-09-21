@@ -121,7 +121,7 @@ def histogram() -> None:
     handles, labels = graph.gca().get_legend_handles_labels()
     graph.figlegend(handles, labels, loc='lower right')
     save_fig("histogram", "histogram.png")
-    #graph.show()
+    # graph.show()
     graph.figure()
     plot = 1
     # display the most homogeneous course
@@ -150,7 +150,7 @@ def histogram() -> None:
     handles, labels = graph.gca().get_legend_handles_labels()
     graph.figlegend(handles, labels, loc='lower right')
     save_fig("histogram", "Most homogeneous score distribution.png")
-    #graph.show()
+    # graph.show()
 
 
 if __name__ == "__main__":

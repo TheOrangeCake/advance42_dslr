@@ -5,7 +5,6 @@ import logging
 from helper.read_data import (
     nb_students,
     get_courses_list,
-    course_data,
     read_dataset,
 )
 import describe.count_mean_std as cal
@@ -42,7 +41,7 @@ def select_training_data_features(data: dict[str, list[str]]) -> np.ndarray:
         list_courses = get_courses_list(data)
     except (KeyError, ValueError) as e:
         logging.critical(e)
-        sys.exit(1) 
+        sys.exit(1)
 
     for student in range(nb_stud):
         student_grades = []
@@ -108,12 +107,14 @@ def init_weights_file(path: str, courses: list[str]) -> None:
         header = ["House", "Bias"] + courses
         writer.writerow(header)
 
+
 def save_house_weights(
     path: str,
     house_weights: list[str]
 ) -> None:
     with open(path, "a", newline="") as file:
-        writer = csv.writer(file).writerows(house_weights)
+        csv.writer(file).writerows(house_weights)
+
 
 def save_normalization(
     path: str, means: np.ndarray, stds: np.ndarray
@@ -123,6 +124,7 @@ def save_normalization(
         writer.writerow(["Mean", 0, *means])
         writer.writerow(["Std", 0, *stds])
 
+
 """
 def read_normalization(path: str) -> tuple[list[str], np.ndarray, np.ndarray]:
     data = read_dataset(path)
@@ -131,12 +133,16 @@ def read_normalization(path: str) -> tuple[list[str], np.ndarray, np.ndarray]:
     return means, stds
 """
 
+
 def read_weights(path: str):
     data = read_dataset(path)
     labels = data["House"]
     list_courses = [c for c in data if c not in ("House", "Bias")]
 
-    house_rows = [i for i, name in enumerate(labels) if name not in ("Mean", "Std")]
+    house_rows = [
+        i for i, name in enumerate(labels)
+        if name not in ("Mean", "Std")
+    ]
     mean_row = labels.index("Mean")
     std_row = labels.index("Std")
 
@@ -148,4 +154,3 @@ def read_weights(path: str):
     means = np.array([float(data[c][mean_row]) for c in list_courses])
     stds = np.array([float(data[c][std_row]) for c in list_courses])
     return list_houses, list_courses, houses_biais, houses_weights, means, stds
-

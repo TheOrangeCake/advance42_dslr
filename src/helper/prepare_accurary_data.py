@@ -2,6 +2,7 @@
 
 import csv
 
+
 def create_accuracy_test_file(source_train: str,) -> None:
     with open(source_train, "r", newline="") as src:
         reader = csv.DictReader(src)

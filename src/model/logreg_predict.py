@@ -20,26 +20,31 @@ def logreg_predict(dataset_path, weights_path="weights.csv"):
     # retunr predicted cprobability each training exemple"""
 
     weights_missing = not Path(weights_path).exists()
-    
+
     if weights_missing:
         logging.critical(
             'Missing file containing the weights trained logreg_train'
             ' — run "make train" first'
         )
         sys.exit(1)
-    
+
     try:
-        list_houses, list_courses, houses_biais, houses_weights, means, stds = read_weights(
-                weights_path)
+        (
+            list_houses,
+            list_courses,
+            houses_biais,
+            houses_weights,
+            means,
+            stds,
+        ) = read_weights(weights_path)
+
     except (KeyError, ValueError) as e:
         logging.critical(e)
-        sys.exit(1)    
+        sys.exit(1)
 
-    
     # prepare datas:
     grades_data = get_grades_data(list_courses, means, stds)
     nb_stud = grades_data.shape[0]
-
 
     students_predictions = []
     for student in range(nb_stud):
@@ -52,7 +57,9 @@ def logreg_predict(dataset_path, weights_path="weights.csv"):
                 houses_biais[house_index],
             )
             house_prob[house_index] = probability
-        students_predictions.append(most_probable_house(house_prob, list_houses))
+        students_predictions.append(
+            most_probable_house(house_prob, list_houses)
+        )
     try:
         save_students_predictions("houses.csv", students_predictions)
     except IOError as e:
@@ -94,6 +101,6 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         logging.critical('Usage: ./logreg_predict [Dataset path]')
         sys.exit(1)
-    
+
     logging.info(f"Logreg Predict Dataset source: {sys.argv[1]}")
     logreg_predict(sys.argv[1])

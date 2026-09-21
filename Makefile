@@ -48,6 +48,8 @@ dummy:
 dummy2:
 	$(PYTHON) src/describe/describe.py $(DATA_DUMMY_2)
 
-make fcl
+fclean:
+	rm -rf plots
+	rm -f weights.csv houses.csv
 
-.PHONY: all describe histogram scatter pair train predict accuracy require install flake dummy dummy2
+.PHONY: all describe histogram scatter pair train predict accuracy require install flake dummy dummy2 fclean

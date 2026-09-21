@@ -159,7 +159,7 @@ def draw_history(history: dict[str, list[float]]) -> None:
     graph.legend()
     graph.grid(alpha=0.3)
     save_fig("model", "training_history.png")
-    #graph.show()
+    # graph.show()
 
 
 def chunks(rows, size):
