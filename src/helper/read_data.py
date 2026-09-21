@@ -112,7 +112,7 @@ def nb_students(data: dict[str, list[str]]) -> int:
     nb_students = len(data["Hogwarts House"])
     if nb_students == 0:
         raise ValueError("No student in dataset")
-    return 
+    return nb_students
 
 
 # get data by branch in numpy

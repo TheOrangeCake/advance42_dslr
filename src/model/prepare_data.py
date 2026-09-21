@@ -21,26 +21,6 @@ def get_binary_labels_for_house(
     return training_data_labels
 
 
-def init_weights_file(path: str, courses: list[str]) -> None:
-    with open(path, "w", newline="") as file:
-        writer = csv.writer(file)
-
-        header = ["House", "Bias"] + courses
-        writer.writerow(header)
-
-def save_house_weights(
-    path: str,
-    house: str,
-    bias: float,
-    weights: np.ndarray
-) -> None:
-    with open(path, "a", newline="") as file:
-        writer = csv.writer(file)
-
-        row = [house, bias] + weights.tolist()
-        writer.writerow(row)
-
-
 def save_students_predictions(
     path: str,
     students_predictions: list[str]
@@ -121,14 +101,33 @@ def normalize_features_predict(features: np.ndarray, means, stds):
     return normalized
 
 
-def save_normalization(
-    path: str, courses: list[str], means: np.ndarray, stds: np.ndarray
-) -> None:
+def init_weights_file(path: str, courses: list[str]) -> None:
     with open(path, "w", newline="") as file:
         writer = csv.writer(file)
-        writer.writerow(["Course", "Mean", "Std"])
-        for course, mean, std in zip(courses, means, stds):
-            writer.writerow([course, mean, std])
+
+        header = ["House", "Bias"] + courses
+        writer.writerow(header)
+
+
+def save_house_weights(
+    path: str,
+    house: str,
+    bias: float,
+    weights: np.ndarray
+) -> None:
+    with open(path, "a", newline="") as file:
+        writer = csv.writer(file)
+
+        row = [house, bias] + weights.tolist()
+        writer.writerow(row)
+
+def save_normalization(
+    path: str, means: np.ndarray, stds: np.ndarray
+) -> None:
+    with open(path, "a", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(["Mean", 0, *means])
+        writer.writerow(["Std", 0, *stds])
 
 
 def read_normalization(path: str) -> tuple[list[str], np.ndarray, np.ndarray]:

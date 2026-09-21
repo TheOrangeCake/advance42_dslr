@@ -121,9 +121,9 @@ def logreg_train(dataset_path, iterations, learning_rate):
     nb_input_features = training_data_features.shape[1]  # nb de colonnes
 
 # one-vs-Rest
-    init_weights_file("weights.csv", list_courses)
+    
 
-    save_normalization("normalization.csv", list_courses, means, std)
+    
     # Create history variable to store cost during training
     history = {}
 
@@ -141,6 +141,16 @@ def logreg_train(dataset_path, iterations, learning_rate):
         )
         save_house_weights("weights.csv", house, final_biais, final_weight)
         history[house] = cost_history
+
+    try:
+        init_weights_file("weights.csv", list_courses)
+
+        save_normalization("weights.csv", means, std)
+
+    except IOError as e:
+        logging.critical(e)
+        sys.exit(1)
+    
 
     draw_history2(history, iterations, learning_rate, list_houses)
     return
