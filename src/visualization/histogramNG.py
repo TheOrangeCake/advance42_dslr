@@ -64,7 +64,7 @@ def histogram() -> None:
     handles, labels = graph.gca().get_legend_handles_labels()
     graph.figlegend(handles, labels, loc='lower right')
     save_fig("histogram", "histogram.png")
-    graph.show()
+    #graph.show()
     # Conclusion:
     # Q: Which Hogwarts course has a homogeneous score
     #    distribution between all four houses?

@@ -48,4 +48,6 @@ dummy:
 dummy2:
 	$(PYTHON) src/describe/describe.py $(DATA_DUMMY_2)
 
+make fcl
+
 .PHONY: all describe histogram scatter pair train predict accuracy require install flake dummy dummy2

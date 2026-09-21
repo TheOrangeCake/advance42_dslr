@@ -53,15 +53,9 @@ Points below are to be fixed:
 
 I. General
 
-9 - Please don't forget try catch for `open()` in `init_weights_file()`, `init_houses_file()`, `save_house_weights()`, etc. -> handle errors
-I'll see error handeling 
 10 - As specified in the subject: "The second one must be named logreg_predict.[extension]. It takes dataset_test.csv as a parameter and a file containing 
 the weights trained by the previous program." -> so train should export into 1 file only (weights.csv), this also mean `logreg_predict()` should take in 
 only 1 weight file as well and the file name shouldn't be hard coded.
-
-14 - What if `std` and `mean` don't exist in `read_normalization()`? -> Error handling
-error handeling in accuracy
-
 
 11 - Batch training was implemented in old version but got lost in the refactor -> reimplement Batch training (SGD: 1; Minibatch: n; GD: all)
 
@@ -100,3 +94,7 @@ save_house_weights() is used only 4 times. I did change for predictions
 4 - Function `get_houses_list()` raises KeyError but all calls (train, predict and pair plot) check `if not list_houses:` instead -> either catch the error or return an empty array
 Ok. It checks if it is a "Hogwarts houses" column and then if this column is empty. But 
 6 - No catch after calling `nb_students()` -> catch
+9 - Please don't forget try catch for `open()` in `init_weights_file()`, `init_houses_file()`, `save_house_weights()`, etc. -> handle errors
+I'll see error handeling 
+14 - What if `std` and `mean` don't exist in `read_normalization()`? -> Error handling
+error handeling in accuracy

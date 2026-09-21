@@ -8,7 +8,6 @@ from prepare_data import (
     select_training_data_features,
     normalize_features_predict,
     read_weights,
-    read_normalization,
     get_courses_list,
 )
 import numpy as np
@@ -20,23 +19,27 @@ def logreg_predict(dataset_path, weights_path="weights.csv"):
     # model's output for each training exemple and return
     # retunr predicted cprobability each training exemple"""
 
-    weights_missing = not Path("weights.csv").exists()
-    normalization_missing = not Path("normalization.csv").exists()
-    if weights_missing or normalization_missing:
+    weights_missing = not Path(weights_path).exists()
+    
+    if weights_missing:
         logging.critical(
-            'Missing "weights.csv" or "normalization.csv"'
+            'Missing file containing the weights trained logreg_train'
             ' — run "make train" first'
         )
-        return
-    list_houses, list_courses, houses_biais, houses_weights = read_weights(
-        "weights.csv"
-    )
-    means, stds = read_normalization("normalization.csv")
+        sys.exit(1)
+    
+    try:
+        list_houses, list_courses, houses_biais, houses_weights, means, stds = read_weights(
+                weights_path)
+    except (KeyError, ValueError) as e:
+        logging.critical(e)
+        sys.exit(1)    
+
+    
     # prepare datas:
     grades_data = get_grades_data(list_courses, means, stds)
     nb_stud = grades_data.shape[0]
 
-   # init_houses_file("houses.csv")
 
     students_predictions = []
     for student in range(nb_stud):
@@ -50,8 +53,11 @@ def logreg_predict(dataset_path, weights_path="weights.csv"):
             )
             house_prob[house_index] = probability
         students_predictions.append(most_probable_house(house_prob, list_houses))
-
+    try:
         save_students_predictions("houses.csv", students_predictions)
+    except IOError as e:
+        logging.critical(e)
+        sys.exit(1)
     return
 
 

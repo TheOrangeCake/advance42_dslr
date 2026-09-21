@@ -77,7 +77,7 @@ def print_similar(data, a, b):
     graph.xlabel(a)
     graph.ylabel(b)
     save_fig("scatter", "similar.png")
-    graph.show()
+    #graph.show()
 
 
 if __name__ == "__main__":

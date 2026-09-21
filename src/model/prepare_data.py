@@ -108,18 +108,12 @@ def init_weights_file(path: str, courses: list[str]) -> None:
         header = ["House", "Bias"] + courses
         writer.writerow(header)
 
-
 def save_house_weights(
     path: str,
-    house: str,
-    bias: float,
-    weights: np.ndarray
+    house_weights: list[str]
 ) -> None:
     with open(path, "a", newline="") as file:
-        writer = csv.writer(file)
-
-        row = [house, bias] + weights.tolist()
-        writer.writerow(row)
+        writer = csv.writer(file).writerows(house_weights)
 
 def save_normalization(
     path: str, means: np.ndarray, stds: np.ndarray
@@ -129,23 +123,29 @@ def save_normalization(
         writer.writerow(["Mean", 0, *means])
         writer.writerow(["Std", 0, *stds])
 
-
+"""
 def read_normalization(path: str) -> tuple[list[str], np.ndarray, np.ndarray]:
     data = read_dataset(path)
     means = np.array(data["Mean"], dtype=float)
     stds = np.array(data["Std"], dtype=float)
     return means, stds
+"""
 
-
-def read_weights(
-    path: str,
-) -> tuple[list[str], list[str], np.ndarray, np.ndarray]:
+def read_weights(path: str):
     data = read_dataset(path)
-    list_houses = data["House"]
+    labels = data["House"]
     list_courses = [c for c in data if c not in ("House", "Bias")]
-    houses_biais = np.array(data["Bias"], dtype=float)
-    houses_weights = np.zeros((len(list_houses), len(list_courses)))
-    for i in range(len(list_houses)):
-        for j, course in enumerate(list_courses):
-            houses_weights[i, j] = float(data[course][i])
-    return list_houses, list_courses, houses_biais, houses_weights
+
+    house_rows = [i for i, name in enumerate(labels) if name not in ("Mean", "Std")]
+    mean_row = labels.index("Mean")
+    std_row = labels.index("Std")
+
+    list_houses = [labels[i] for i in house_rows]
+    houses_biais = np.array([float(data["Bias"][i]) for i in house_rows])
+    houses_weights = np.array(
+        [[float(data[c][i]) for c in list_courses] for i in house_rows]
+    )
+    means = np.array([float(data[c][mean_row]) for c in list_courses])
+    stds = np.array([float(data[c][std_row]) for c in list_courses])
+    return list_houses, list_courses, houses_biais, houses_weights, means, stds
+

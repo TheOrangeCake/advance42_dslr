@@ -126,6 +126,7 @@ def logreg_train(dataset_path, iterations, learning_rate):
     
     # Create history variable to store cost during training
     history = {}
+    house_weights = []
 
     for house in list_houses:
         # PREPARE DATA training_data_labels= LABEL of house = 1
@@ -139,12 +140,12 @@ def logreg_train(dataset_path, iterations, learning_rate):
             learning_rate,
             iterations,
         )
-        save_house_weights("weights.csv", house, final_biais, final_weight)
+        house_weights.append([house, final_biais, *final_weight])
         history[house] = cost_history
 
     try:
         init_weights_file("weights.csv", list_courses)
-
+        save_house_weights("weights.csv", house_weights)
         save_normalization("weights.csv", means, std)
 
     except IOError as e:
@@ -251,7 +252,7 @@ def draw_history2(
     graph.legend()
     graph.grid(alpha=0.3)
     save_fig("model", "training_history.png")
-    graph.show()
+    #graph.show()
 
 
 if __name__ == "__main__":
