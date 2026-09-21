@@ -20,8 +20,6 @@ from prepare_data import (  # noqa: E402
     get_binary_labels_for_house,
     init_weights_file,
     save_house_weights,
-    get_iterations,
-    get_learning_rate,
     select_training_data_features,
     normalize_features,
     save_normalization,
@@ -82,22 +80,18 @@ COLORS = {
 # base, indépendamment des features.
 # weight et biais c'est ce que le modèle apprends
 
-
-def logreg_train(dataset_path, iterations=1000, learning_rate=0.01):
+def logreg_train(dataset_path, iterations, learning_rate):
     print("itarations: ",  iterations, "learning_rate: ", learning_rate)
 
     # prepare datas
     data = import_data(sys.argv[1])
     # list of house and courses + verifications
-    list_houses: list[str] = get_houses_list(data)
-    if not list_houses:
-        logging.critical('Missing or empty "Hogwarts House" column')
-        return
-    # print(list_houses)
-    list_courses: list[str] = get_courses_list(data)
-    if not list_courses:
-        logging.critical("Missing or empty courses in dataset")
-    # print(list_courses)
+    try:
+        list_houses: list[str] = get_houses_list(data)
+        list_courses: list[str] = get_courses_list(data)
+    except (KeyError, ValueError) as e:
+        logging.critical(e)
+        sys.exit(1)
 
     # grades for each student
     training_data_features = select_training_data_features(data)
@@ -252,15 +246,26 @@ def draw_history2(
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        logging.critical('Usage: ./logreg_train [Dataset path]')
+        logging.error('Usage: ./logreg_train [Dataset path]')
         sys.exit(1)
 
     logging.info(f"Logreg Train Dataset source: {sys.argv[1]}")
 
     # itarations = EPOCH.
-#    iterations = get_iterations()
+    try:
+        if len(sys.argv) >= 3:
+            iterations =  int(sys.argv[2])
+        else:
+            iterations = 1000
 
-#    learning_rate = get_learning_rate()
+        if len(sys.argv) >= 4:
+            learning_rate = float(sys.argv[3])
+        else:
+            learning_rate = 0.01
+
+    except ValueError:
+        logging.error('Usage: make train ARGS="<iterations:int> <learning_rate:float>"')
+        sys.exit(1)
 
     # learning_rate = STEPS A vérifier
-    logreg_train(sys.argv[1])
+    logreg_train(sys.argv[1], iterations, learning_rate)

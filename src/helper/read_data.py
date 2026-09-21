@@ -55,7 +55,6 @@ def import_data(data_train: str) -> dict[str, list[str]]:
     empty_values(data)
     return data
 
-
 def read_dataset(data_train: str) -> dict[str, list[str]]:
     try:
         with open(data_train, mode='r') as file:
@@ -83,7 +82,6 @@ def empty_values(data: dict[str, list[str]]) -> None:
             if data[column][i] == "":
                 data[column][i] = "nan"
 
-
 # get courses list
 def get_courses_list(data: dict[str, list[str]]) -> list[str]:
     courses_list = []
@@ -91,24 +89,30 @@ def get_courses_list(data: dict[str, list[str]]) -> list[str]:
         if i == "Hogwarts House":
             continue
         courses_list.append(i)
+    if not courses_list:
+        raise ValueError("Missing or empty courses in dataset")
     return courses_list
-
 
 # get houses list
 def get_houses_list(data: dict[str, list[str]]) -> list[str]:
+    houses_list = []
     if ("Hogwarts House") not in data:
         raise KeyError("No Hogwarts House in data set")
-    houses_list = []
-    for i in range(len(data["Hogwarts House"])):
-        if data["Hogwarts House"][i] not in houses_list:
-            houses_list.append(data["Hogwarts House"][i])
+    for house in data["Hogwarts House"]:
+        if house not in ("", "nan") and house not in houses_list:
+            houses_list.append(house)
+    if not houses_list:
+        raise ValueError('Missing or empty "Hogwarts House" column')    
     return houses_list
 
 
 def nb_students(data: dict[str, list[str]]) -> int:
     if "Hogwarts House" not in data:
         raise KeyError("No Hogwarts House in data set")
-    return len(data["Hogwarts House"])
+    nb_students = len(data["Hogwarts House"])
+    if nb_students == 0:
+        raise ValueError("No student in dataset")
+    return 
 
 
 # get data by branch in numpy

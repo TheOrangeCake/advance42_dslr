@@ -3,7 +3,6 @@ DATA_TRAIN = src/datasets/dataset_train.csv
 DATA_DUMMY = src/datasets/dummy.csv
 DATA_DUMMY_2 = src/datasets/dummy2.csv
 DATA_DUMMY_TEST = src/datasets/dummy_test.csv
-DATA_ACCURACY_TRAIN = src/datasets/accuracy_dataset_train.csv
 DATA_ACCURACY_TEST = src/datasets/accuracy_dataset_test.csv
 
 PYTHON = venv/bin/python3
@@ -31,7 +30,7 @@ predict:
 	$(PYTHON) src/model/logreg_predict.py $(DATA_TEST)
 
 accuracy:
-	$(PYTHON) src/model/accuracy.py $(DATA_TRAIN) $(DATA_TEST) $(ARGS)
+	$(PYTHON) src/model/accuracy.py $(DATA_TRAIN) $(DATA_ACCURACY_TEST) $(ARGS)
 
 require:
 	$(PIP) freeze > requirements.txt

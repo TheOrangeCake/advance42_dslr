@@ -4,8 +4,7 @@ import sys
 import logging
 from helper.read_data import import_data
 from prepare_data import (
-    init_houses_file,
-    save_student_prediction,
+    save_students_predictions,
     select_training_data_features,
     normalize_features_predict,
     read_weights,
@@ -37,8 +36,9 @@ def logreg_predict(dataset_path, weights_path="weights.csv"):
     grades_data = get_grades_data(list_courses, means, stds)
     nb_stud = grades_data.shape[0]
 
-    init_houses_file("houses.csv")
+   # init_houses_file("houses.csv")
 
+    students_predictions = []
     for student in range(nb_stud):
         student_grade = grades_data[student]
         house_prob = np.zeros(len(list_houses))
@@ -49,16 +49,19 @@ def logreg_predict(dataset_path, weights_path="weights.csv"):
                 houses_biais[house_index],
             )
             house_prob[house_index] = probability
-        student_prediction = most_probable_house(house_prob, list_houses)
-        save_student_prediction("houses.csv", student, student_prediction)
+        students_predictions.append(most_probable_house(house_prob, list_houses))
+
+        save_students_predictions("houses.csv", students_predictions)
     return
 
 
 def get_grades_data(list_courses, means, stds) -> np.ndarray:
     prediction_data = import_data(sys.argv[1])
-    test_courses = get_courses_list(prediction_data)
-    if not list_courses:
-        logging.critical("Missing or empty courses in dataset")
+    try:
+        test_courses = get_courses_list(prediction_data)
+    except (KeyError, ValueError) as e:
+        logging.critical(e)
+        sys.exit(1)
     if test_courses != list_courses:
         raise ValueError(
             f"Course mismatch between test dataset and trained model.\n"
@@ -70,13 +73,7 @@ def get_grades_data(list_courses, means, stds) -> np.ndarray:
 
 
 def most_probable_house(house_prob, list_house):
-    chosen_index = 0
-
-    for i in range(len(list_house)):
-        if house_prob[i] > house_prob[chosen_index]:
-            chosen_index = i
-
-    return list_house[chosen_index]
+    return list_house[np.argmax(house_prob)]
 
 
 def predict(

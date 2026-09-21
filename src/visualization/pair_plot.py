@@ -33,11 +33,12 @@ def pair_plot():
         logging.info(f"Pair Plot Dataset source: {sys.argv[1]}")
     data = import_data(sys.argv[1])
 
-    list_houses: list[str] = get_houses_list(data)
-    list_courses: list[str] = get_courses_list(data)
-    if not list_courses:
-        logging.critical("Missing or empty courses in dataset")
-    # init graphic
+    try:
+        list_houses: list[str] = get_houses_list(data)
+        list_courses: list[str] = get_courses_list(data)
+    except (KeyError, ValueError) as e:
+        logging.critical(e)
+        sys.exit(1)
     figure, axes = graph.subplots(
         len(list_courses), len(list_courses), figsize=(20, 20)
     )

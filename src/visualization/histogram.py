@@ -88,14 +88,12 @@ def histogram() -> None:
         return
     plot = 1
 
-    list_houses: list[str] = get_houses_list(data)
-    if not list_houses:
-        logging.critical('Missing or empty "Hogwarts House" column')
-        return
-
-    list_courses: list[str] = get_courses_list(data)
-    if not list_courses:
-        logging.critical("Missing or empty courses in dataset")
+    try:
+        list_houses: list[str] = get_houses_list(data)
+        list_courses: list[str] = get_courses_list(data)
+    except (KeyError, ValueError) as e:
+        logging.critical(e)
+        sys.exit(1)
     # name = course. plus compréhensible
     homogeneity_ind: dict[str, float] = {}
     for course in list_courses:

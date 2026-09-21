@@ -28,15 +28,6 @@ def init_weights_file(path: str, courses: list[str]) -> None:
         header = ["House", "Bias"] + courses
         writer.writerow(header)
 
-
-def init_houses_file(path: str) -> None:
-    with open(path, "w", newline="") as file:
-        writer = csv.writer(file)
-
-        header = ["Index", "Hogwarts House"]
-        writer.writerow(header)
-
-
 def save_house_weights(
     path: str,
     house: str,
@@ -50,27 +41,15 @@ def save_house_weights(
         writer.writerow(row)
 
 
-def save_student_prediction(
+def save_students_predictions(
     path: str,
-    index: str,
-    house: str
+    students_predictions: list[str]
 ) -> None:
-    with open(path, "a", newline="") as file:
+    with open(path, "w", newline="") as file:
         writer = csv.writer(file)
-        row = [index, house]
-        writer.writerow(row)
-
-
-def get_iterations() -> int:
-    if len(sys.argv) >= 4:
-        return int(sys.argv[3])
-    return 1000
-
-
-def get_learning_rate() -> float:
-    if len(sys.argv) == 5:
-        return float(sys.argv[4])
-    return 0.01
+        writer.writerow(["Index", "Hogwarts House"])
+        for index, house in enumerate(students_predictions):
+            writer.writerow([index, house])
 
 
 # OK arrah student course.
@@ -78,17 +57,12 @@ def select_training_data_features(data: dict[str, list[str]]) -> np.ndarray:
     # retourne un tableau [étudiant][note],
     grades = []
 
-#    try:
-    nb_stud = nb_students(data)
-#    except KeyError as error: 
-#        logging.critical(error)
-    if nb_stud == 0:
-        logging.critical("No student in dataset")
-        return np.empty((0,0))   
-    list_courses = get_courses_list(data)
-    if not list_courses:
-        logging.critical("Missing or empty courses in dataset")
-        return np.empty((0,0))   
+    try:
+        nb_stud = nb_students(data)
+        list_courses = get_courses_list(data)
+    except (KeyError, ValueError) as e:
+        logging.critical(e)
+        sys.exit(1) 
 
     for student in range(nb_stud):
         student_grades = []
