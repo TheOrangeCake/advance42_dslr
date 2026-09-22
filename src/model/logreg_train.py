@@ -25,63 +25,6 @@ from prepare_data import (  # noqa: E402
     save_normalization,
 )
 
-#  3 - [OK] Define batch size
-# important pour bonus to do sylvie
-#      GD: None; mini-batch: 32; SGD: 1;
-# BATCH_SIZE = None
-
-"""
-    change EPOCH et STEPS
-    make train3 ARGS=
-
-    alors il faut regarder la probablité de chaque étudiant pour chaque maison
-    et après on choisi 1 maison par étudiant
-
-    ça c'est pour après
-    house_prob = []
-    for each student
-        for house in HOUSES
-            probability =
-            house_prob.append()
-
-    weights = tableau avec toutes les features(branches) init à zero
-    ça va se calculer automatiquement
-    les weights c'est ce que le modèle va apprendre
-    Il va les utiliser avec des nouvelles datas pour prédire des réponses
-
-    entrainer model:
-    données x + vraies réponses y
-    calcul des prédictions
-    mesure de l'erreur
-    modification des weights delta
-    répéter
-    garder les weights
-
-video
-https://www.youtube.com/watch?v=3giTXZbyf1Q
-5 functions
-
-Predict function it uses the final values of W and B to compute the final
-model's outpt for each training example  returns predicted for each
-training example
-
-batch = lot
-batch GD = descente de gradient par lots
-BATCH_SIZE = None veut dire tout le dataset
-
-epoch         = nombre de passages complets sur le dataset
-learning_rate = taille de la modification des weights
-step          = une mise à jour des weights
-GD, mini-batch et SGD diffèrent ici par le nombre d'exemples utilisés
-avant chaque mise à jour des poids.
-batch size = None ou nombre total d étudiants:  GD donc on parcourt tout
-d un coup le lot c tout les étudiants
-batch size = 32 mini batch c est pas petites portions de 32 étudiants
-batch size = 1 sdg c'est un par un.
-
-step          = "je modifie les weights une fois"
-learning rate = "de combien je les modifie"
-"""
 
 COLORS = {
     "Gryffindor": "red",
@@ -102,7 +45,6 @@ def logreg_train(dataset_path, epoch, learning_rate, batch_size):
 
     # prepare datas
     data = import_data(dataset_path)
-    # list of house and courses + verifications
     try:
         list_houses: list[str] = get_houses_list(data)
         list_courses: list[str] = get_courses_list(data)
@@ -112,7 +54,6 @@ def logreg_train(dataset_path, epoch, learning_rate, batch_size):
 
     # grades for each student
     training_data_features = select_training_data_features(data)
-    # print(training_data_features)
 
     training_data_features, means, std = normalize_features(
         training_data_features
@@ -121,33 +62,33 @@ def logreg_train(dataset_path, epoch, learning_rate, batch_size):
         np.set_printoptions(suppress=True, precision=3, linewidth=200)
         # print(training_data_features[i])
 
-# résultats sur lesquels on va venir s entrainer.
+    # result values to train on
     houses_labels = data["Hogwarts House"]
     # print(houses_labels)
 
-    # error type??
-# si y a pas autant de réponses que d'étudiants
+    # check if same numbers of students and result values
     if len(training_data_features) != len(houses_labels):
         return
     global nb_training_exmpl
     global nb_input_features
 
-# nb d étudiants avec ses résultats pour s entrainter
+    # nb lines = nb students to train on
     nb_training_exmpl = len(training_data_features)  # nb de lignes
-# nb de branches sur lesquells on peut s entrainer.
+    # nb rows = nb branches/features to train on
     nb_input_features = training_data_features.shape[1]  # nb de colonnes
 
-# one-vs-Rest
+    # train the model
     # Create history variable to store cost during training
     history = {}
     house_weights = []
 
+    # one-vs-Rest. Train on each house
     for house in list_houses:
-        # PREPARE DATA training_data_labels= LABEL of house = 1
-        # other houses = 0
+        # the selected house is 1, other houses are 0
         training_data_labels = get_binary_labels_for_house(
             houses_labels, house
         )
+        # the logistic regression function
         final_weight, final_biais, cost_history = logistic_regression(
             training_data_features,
             training_data_labels,
@@ -157,6 +98,7 @@ def logreg_train(dataset_path, epoch, learning_rate, batch_size):
         house_weights.append([house, final_biais, *final_weight])
         history[house] = cost_history
 
+    # store data
     try:
         init_weights_file("weights.csv", list_courses)
         save_house_weights("weights.csv", house_weights)
@@ -170,31 +112,44 @@ def logreg_train(dataset_path, epoch, learning_rate, batch_size):
     return
 
 
-def sigmoid(z) -> float:
-    # return float between 0.0 and 1.0 probability
-    return 1 / (1 + np.exp(-z))
-
-
-def cost_function(
-    training_data_features, training_data_labels: np.ndarray, weight, biais
+def logistic_regression(
+    training_data_features,
+    training_data_labels,
+    learning_rate,
+    epoch,
+    batch_size
 ):
-    # how well how model is doing
+    # uses the gradient function to update wheight and bias over a
+    # specified number of epoch
+    nb_training_data_features = len(training_data_features)
+    if batch_size is None:
+        batch_size = nb_training_data_features
 
-    # accumulate the total error across all the training examples
-    cost_sum = 0
+    weight = np.zeros(nb_input_features)
+    biais = 0
+    cost_history = []
 
-    # loop over each training exemple
-    for i in range(nb_training_exmpl):
-        # z = linear combinaton input
-        z = np.dot(weight, training_data_features[i]) + biais
-        g = sigmoid(z)
+    for i in range(epoch):
+        order = np.random.permutation(nb_training_data_features)
+        for start in range(0, nb_training_data_features, batch_size):
+            idx = order[start:start + batch_size]
+            grad_biais, grad_weight = gradient_function(
+                training_data_features[idx],
+                training_data_labels[idx],
+                weight,
+                biais
+            )
 
-        cost_sum += (
-            - training_data_labels[i] * np.log(g)
-            - (1 - training_data_labels[i]) * np.log(1 - g)
+            weight = weight - learning_rate * grad_weight
+            biais = biais - learning_rate * grad_biais
+
+        current_cost = cost_function(
+            training_data_features, training_data_labels, weight, biais
         )
-        # return the average cost
-    return (1/nb_training_exmpl) * cost_sum
+        if i % 100 == 0:
+            print(f"EPOCH {i}: Cost {current_cost}")
+        cost_history.append(current_cost)
+    return weight, biais, cost_history
 
 
 def gradient_function(
@@ -221,44 +176,35 @@ def gradient_function(
     grad_weight = (1/nb_examples) * grad_weight
 
     return grad_biais, grad_weight
-
     # gradient descent
 
 
-def logistic_regression(
-    training_data_features, training_data_labels, alpha, epoch, batch_size
+def cost_function(
+    training_data_features, training_data_labels: np.ndarray, weight, biais
 ):
-    # uses the gradient function to update wheight and bias over a
-    # specified number of epoch
-    nb_training_data_features = len(training_data_features)
-    if batch_size is None:
-        batch_size = nb_training_data_features
+    # how well how model is doing
 
-    weight = np.zeros(nb_input_features)
-    biais = 0
-    cost_history = []
+    # accumulate the total error across all the training examples
+    cost_sum = 0
 
-    for i in range(epoch):
-        order = np.random.permutation(nb_training_data_features)
-        for start in range(0, nb_training_data_features, batch_size):
-            idx = order[start:start + batch_size]
-            grad_biais, grad_weight = gradient_function(
-                training_data_features[idx],
-                training_data_labels[idx],
-                weight,
-                biais
-            )
+    # loop over each training exemple
+    for i in range(nb_training_exmpl):
+        # z = linear combinaton input
+        z = np.dot(weight, training_data_features[i]) + biais
+        g = sigmoid(z)
 
-            weight = weight - alpha * grad_weight
-            biais = biais - alpha * grad_biais
-
-        current_cost = cost_function(
-            training_data_features, training_data_labels, weight, biais
+        cost_sum += (
+            - training_data_labels[i] * np.log(g)
+            - (1 - training_data_labels[i]) * np.log(1 - g)
         )
-        if i % 100 == 0:
-            print(f"EPOCH {i}: Cost {current_cost}")
-        cost_history.append(current_cost)
-    return weight, biais, cost_history
+        # return the average cost
+    return (1/nb_training_exmpl) * cost_sum
+
+
+# sigmoid/ logistic function
+def sigmoid(z) -> float:
+    # return float between 0.0 and 1.0 probability
+    return 1 / (1 + np.exp(-z))
 
 
 def draw_history(
@@ -314,4 +260,4 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # learning_rate = STEPS A vérifier
-    logreg_train(sys.argv[1], epoch, learning_rate, batch_size)
+    logreg_train(sys.argv[1], epoch, learning_rate, 35)

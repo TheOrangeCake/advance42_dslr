@@ -2,7 +2,6 @@ from math import floor
 import math
 
 
-# calculs pour make describe
 def cal_min(values: list[float]) -> float:
     if not values:
         return float('nan')
@@ -27,7 +26,7 @@ def cal_max(values: list[float]) -> float:
     return max_value
 
 
-# la valeur sous laquelle se trouvent environ p% des données.
+# The value below which approximately p% of the data falls
 def cal_per(values: list[float], p: int) -> float:
     if not values:
         return float('nan')
@@ -48,33 +47,3 @@ def cal_per(values: list[float], p: int) -> float:
     if diff == 0:
         return clean_val[lower]
     return clean_val[lower] + diff * (clean_val[lower + 1] - clean_val[lower])
-
-
-"""
-old NG calculus
-!!! Has to sort...
-#calculs pour make describe
-def cal_min(values: list[float]) -> float:
-    if not values:
-        return float('nan')
-    return values[0]
-
-
-def cal_max(values: list[float]) -> float:
-    if not values:
-        return float('nan')
-    return values[-1]
-
-def cal_per(values: list[float], p: int) -> float:
-    if not values:
-        return float('nan')
-    if p < 0 or p > 100:
-        return float('nan')
-
-    position = (len(values) - 1) * p / 100
-    lower = floor(position)
-    diff = position - lower
-    if diff == 0:
-        return values[lower]
-    return values[lower] + diff * (values[lower + 1] - values[lower])
-"""

@@ -28,7 +28,7 @@ def cal_mean(values: list[float]) -> float:
     return mean
 
 
-# standard deviation
+# The value below which approximately p% of the data falls
 def cal_std(values: list[float], count: int, mean: float) -> float:
     if len(values) == 0 or count < 2:
         return float('nan')

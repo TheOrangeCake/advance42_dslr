@@ -31,9 +31,8 @@ def save_students_predictions(
             writer.writerow([index, house])
 
 
-# OK arrah student course.
+# return a np array  [student][note]
 def select_training_data_features(data: dict[str, list[str]]) -> np.ndarray:
-    # retourne un tableau [étudiant][note],
     grades = []
 
     try:
@@ -56,7 +55,7 @@ def select_training_data_features(data: dict[str, list[str]]) -> np.ndarray:
 
 # means and stds return for prediction
 def normalize_features(features: np.ndarray):
-    # valeur normalisée = (value - mean) / std
+    # normalized value = (value - mean) / std
 
     nb_features = features.shape[1]
     normalized = np.zeros(features.shape)
@@ -82,7 +81,7 @@ def normalize_features(features: np.ndarray):
 
 
 def normalize_features_predict(features: np.ndarray, means, stds):
-    # valeur normalisée = (value - mean) / std
+    # normalized value = (value - mean) / std
 
     normalized = np.zeros(features.shape)
 
@@ -123,15 +122,6 @@ def save_normalization(
         writer = csv.writer(file)
         writer.writerow(["Mean", 0, *means])
         writer.writerow(["Std", 0, *stds])
-
-
-"""
-def read_normalization(path: str) -> tuple[list[str], np.ndarray, np.ndarray]:
-    data = read_dataset(path)
-    means = np.array(data["Mean"], dtype=float)
-    stds = np.array(data["Std"], dtype=float)
-    return means, stds
-"""
 
 
 def read_weights(path: str):

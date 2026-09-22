@@ -109,3 +109,8 @@ $$
 Non. Tu ne choisis pas toi-même les poids finaux de chaque feature. C’est précisément la régression logistique qui les apprend à partir des données.
 
 Tu dois seulement leur donner une valeur de départ, par exemple
+
+truc tests
+
+args pour train predict et accuracy
+'Usage: make accuracy ARGS="<iterations:int> <learning_rate:float>"'
