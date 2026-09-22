@@ -5,14 +5,10 @@ import logging
 from pathlib import Path
 import coloredlogs
 sys.path.append(str(Path(__file__).parent.parent))
-from helper.read_data import read_dataset  # noqa: E402
+from helper.read_data import import_data  # noqa: E402
 from helper.plot import save_fig  # noqa: E402
 
 coloredlogs.install()
-
-
-SKIP = ["Index", "Hogwarts House", "First Name",
-        "Last Name", "Birthday", "Best Hand"]
 
 
 def scatter() -> None:
@@ -22,12 +18,13 @@ def scatter() -> None:
     else:
         logging.info(f"Scatter Dataset source: {sys.argv[1]}")
 
-    data = read_dataset(sys.argv[1])
+    data = import_data(sys.argv[1])
+    data.pop("Hogwarts House")
 
     per_fig = 9
     count = 0
     fig_num = 1
-    features = [name for name in data if name not in SKIP]
+    features = [name for name in data]
     for i in range(len(features)):
         for j in range(i + 1, len(features)):
             a = features[i]
@@ -80,7 +77,7 @@ def print_similar(data, a, b):
     graph.xlabel(a)
     graph.ylabel(b)
     save_fig("scatter", "similar.png")
-    graph.show()
+    # graph.show()
 
 
 if __name__ == "__main__":

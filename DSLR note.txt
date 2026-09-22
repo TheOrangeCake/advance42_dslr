@@ -1,0 +1,100 @@
+Points below are to be fixed:
+
+I. General
+
+Error handeling
+6 - No catch after calling `nb_students()` -> catch
+14 - What if `std` and `mean` don't exist in `read_normalization()`? -> Error handling
+9 - Please don't forget try catch for `open()` in `init_weights_file()`, `init_houses_file()`, `save_house_weights()`, etc. -> handle errors
+
+
+makefile:
+16 - How to call make train with ARGS? Neither `make train 100 0.001` nor `make train ARGS="100 0.001" worked 
+
+15 - In Makefile, predict should run with `DATA_TEST` instead of `DATA_TRAIN`. PHONY is staled (ok).
+10 - As specified in the subject: "The second one must be named logreg_predict.[extension]. It takes dataset_test.csv as a parameter and a 
+file containing the weights trained by the previous program." -> so train should export into 1 file only (weights.csv), this also mean `logreg_predict()` 
+should take in only 1 weight file as well and the file name shouldn't be hard coded.
+
+
+
+12 - Function `save_house_weights()` was called every loop, this mean the file is open and close way more than necessary! oui mais c'est que 4 fois....
+ Same for `save_student_prediction()` -> store data then write once
+
+I won't check at the logistic regression implementation because it is different (introduction of bias because normalization changed from min/max to std/mean) from what I did, and the concept is the same anyway.
+j'avais déjà bien vérifié que toutes les fonctions que j avais modifié dans describe donnent les mm résultats que les tiennents. 
+
+DONE:
+8 - Is it normal that `init_weights_file()` was called twice in training? -> remove extra
+7 - In `select_training_data_features()`, `course_means` was calculated be never used -> remove
+3 - Function `remove_useless_data()` pops column without checking if its exist, also type check return None is false -> try and catch. Correct type return. -> 
+Answer: try except in python
+data.pop(key, None) -> it doesnt stop the program if one column doesnt existe
+5 - After calling `get_courses_list()`, if the list is empty then program can be terminated early -> print error and return if list_courses is empty 
+
+to discuss:
+
+Need explanation:
+13 - For `most_probable_house()` in prediction, try to use `np.argmax` since order is the same for `house_prob` and `list_house` anyway
+
+4 - Function `get_houses_list()` raises KeyError but all calls (train, predict and pair plot) check `if not list_houses:` instead -> either catch the error or return an empty array
+je vois pas où est le problem. raise c'est au cas où il y a pas de colonne Hogwarts House et check `if not list_houses:` si ya rien dans cette colonne. 
+2 - Why convert empty case to "nan" string in empty_values()? -> simply leave it as "". When converting to float, assign NaN if empty. This avoid an unnecessary additional loop. 
+en construisant j ai laissé ça parce que ça évitait des erreurs. Je vois pas l intéret de changer et je peux pas certifier que ça n apporte pas plus d erreur. 
+1 - Missing dependencies in requirement -> Include scikit-learn and PyQt6 in requirement file.
+scikit ok PyQt6 je vois pas ce que c'est...
+17 - The use of `global` doesn't really justified, maybe refactor that out.
+if it works lets leave it this way
+
+see iterations and learning rate
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXxx
+Points below are to be fixed:
+
+I. General
+
+10 - As specified in the subject: "The second one must be named logreg_predict.[extension]. It takes dataset_test.csv as a parameter and a file containing 
+the weights trained by the previous program." -> so train should export into 1 file only (weights.csv), this also mean `logreg_predict()` should take in 
+only 1 weight file as well and the file name shouldn't be hard coded.
+
+11 - Batch training was implemented in old version but got lost in the refactor -> reimplement Batch training (SGD: 1; Minibatch: n; GD: all)
+
+
+See usages. 
+
+
+ok:
+
+1 - Missing dependencies in requirement -> Include scikit-learn and PyQt6 in requirement file.
+ok
+scikit-learn ok. Where is PyQt6 used?
+2 - Why convert empty case to "nan" string in empty_values()? -> simply leave it as "". When converting to float, assign NaN if empty. This avoid an unnecessary additional loop. 
+I would leave it this way because it works and I can't guarentee it wont be any issue if I change. It was better to make it this way while building
+3 - Function `remove_useless_data()` pops column without checking if its exist, also type check return None is false -> try and catch. Correct type return.
+
+
+7 - In `select_training_data_features()`, `course_means` was calculated be never used -> remove
+ok
+8 - Is it normal that `init_weights_file()` was called twice in training? -> remove extra
+ok
+
+15 - In Makefile, predict should run with `DATA_TEST` instead of `DATA_TRAIN`. PHONY is staled.
+PHONY is updates.
+17 - The use of `global` doesn't really justified, maybe refactor that out.
+I would leave it this way because it works
+
+I won't check at the logistic regression implementation because it is different (introduction of bias because normalization changed from min/max to std/mean) from what I did, and the concept is the same anyway.
+16 - How to call make train with ARGS? Neither `make train 100 0.001` nor `make train ARGS="100 0.001" worked 
+13 - For `most_probable_house()` in prediction, try to use `np.argmax` since order is the same for `house_prob` and `list_house` anyway
+
+12 - Function `save_house_weights()` was called every loop, this mean the file is open and close way more than necessary! Same for `save_student_prediction()` -> store data then write once
+save_house_weights() is used only 4 times. I did change for predictions
+
+5 - After calling `get_courses_list()`, if the list is empty then program can be terminated early -> print error and return if list_courses is empty
+4 - Function `get_houses_list()` raises KeyError but all calls (train, predict and pair plot) check `if not list_houses:` instead -> either catch the error or return an empty array
+Ok. It checks if it is a "Hogwarts houses" column and then if this column is empty. But 
+6 - No catch after calling `nb_students()` -> catch
+9 - Please don't forget try catch for `open()` in `init_weights_file()`, `init_houses_file()`, `save_house_weights()`, etc. -> handle errors
+I'll see error handeling 
+14 - What if `std` and `mean` don't exist in `read_normalization()`? -> Error handling
+error handeling in accuracy

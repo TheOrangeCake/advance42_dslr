@@ -3,6 +3,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 from helper.models import Feature  # noqa: E402
 
+
 display_name = {
     'count': 'Count',
     'mean': 'Mean',

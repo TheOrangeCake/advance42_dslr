@@ -1,15 +1,19 @@
-import math 
+import math
 
-def cal_count(values: list[float]) -> int:
+
+def cal_count(values: list[float]) -> float:
+    if len(values) == 0:
+        return float('nan')
     number = 0
     for value in values:
         if value is not None and not math.isnan(value):
             number += 1
     return number
 
-#The arithmetic mean is the sum of the data divided by the number of data points.
+
+# mean is the sum of the data divided by the number of data points.
 def cal_mean(values: list[float]) -> float:
-    if not values:
+    if values is None or len(values) == 0:
         return float('nan')
     occurrences = 0
     total = 0
@@ -23,9 +27,10 @@ def cal_mean(values: list[float]) -> float:
         return float('nan')
     return mean
 
-#standard deviation
-def cal_std(values: list[float], count:int, mean: float) -> float:
-    if not values or  count < 2:
+
+# standard deviation
+def cal_std(values: list[float], count: int, mean: float) -> float:
+    if len(values) == 0 or count < 2:
         return float('nan')
     squared_differences = 0.0
     for value in values:
