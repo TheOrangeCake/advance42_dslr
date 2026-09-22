@@ -238,6 +238,7 @@ if __name__ == "__main__":
         if epoch < 1:
             raise ValueError
 
+    # learning_rate = step size of gradient descents
         if len(sys.argv) >= 4:
             learning_rate = float(sys.argv[3])
         else:
@@ -259,5 +260,4 @@ if __name__ == "__main__":
         )
         sys.exit(1)
 
-    # learning_rate = STEPS A vérifier
-    logreg_train(sys.argv[1], epoch, learning_rate, 35)
+    logreg_train(sys.argv[1], epoch, learning_rate, batch_size)
