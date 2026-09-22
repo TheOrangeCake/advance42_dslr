@@ -82,7 +82,6 @@ def histogram() -> None:
 
     data = import_data(sys.argv[1])
     house_col = data.get("Hogwarts House")
-    # ou ca se trouve dans le fichier de sortie
     if not house_col:
         logging.critical('Missing or empty "Hogwarts House" column')
         return
@@ -94,7 +93,7 @@ def histogram() -> None:
     except (KeyError, ValueError) as e:
         logging.critical(e)
         sys.exit(1)
-    # name = course. plus compréhensible
+
     homogeneity_ind: dict[str, float] = {}
     for course in list_courses:
         homogeneity_ind[course] = homogeneity_index(data, course, list_houses)
@@ -124,6 +123,7 @@ def histogram() -> None:
     # graph.show()
     graph.figure()
     plot = 1
+
     # display the most homogeneous course
     most_homogeneous_course = select_course(homogeneity_ind, list_courses)
     house_scores = {house: [] for house in list_houses}
@@ -132,7 +132,8 @@ def histogram() -> None:
             data, house, most_homogeneous_course
         )
         house_scores[house] = filter_non(house_scores[house])
-        # build graphics
+
+    # build graphics
     graph.subplot(1, 1, plot)
     graph.xlabel(
         f"H index: {homogeneity_ind[most_homogeneous_course]:.3f} , "

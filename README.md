@@ -214,6 +214,7 @@ target is at least 98%.
 ## Resources
 
 - [Logistic regression](https://www.geeksforgeeks.org/machine-learning/understanding-logistic-regression/)
+- [Logistic regression](https://www.youtube.com/watch?v=3giTXZbyf1Q) 
 - [matplotlib](https://matplotlib.org/3.5.3/api/_as_gen/matplotlib.pyplot.html)
 
 
@@ -257,7 +258,7 @@ Visualize relationships
    ↓
 Train a model
    ↓
-Predict classes (not implemented yet)
+Predict classes
 
 ## Project controls
 

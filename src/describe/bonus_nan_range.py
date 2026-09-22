@@ -1,8 +1,7 @@
 import math
 
 
-# See how many values are missing
-# Many missing compare Count mean incomplete dataset
+# Count missing values
 def cal_nan_count(values: list[float]) -> float:
     if len(values) == 0:
         return float('nan')
@@ -19,8 +18,7 @@ def cal_nan_count(values: list[float]) -> float:
     return float(count)
 
 
-# bonus range= difference entre valeur max et min
-# Range can be compared with 25%, 50% and 75% to spot outliners
+# Range: the difference between the maximum and minimum values in the data.
 def cal_range(values: list[float]) -> float:
     if len(values) == 0:
         return float('nan')

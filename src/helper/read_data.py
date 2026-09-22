@@ -6,22 +6,7 @@ import numpy as np
 
 coloredlogs.install()
 
-'''
-STRATEGY:
-read datas and keep all in str.
-then extract numpy with what you need.
-but always keep all names somewhere
 
-select datas and return numpy:
-by branch
-by house
-by student.
-
-check what is needed in all the project.
-'''
-
-
-# enleve colone non numeric check
 def is_numeric_column(values: list[str]) -> bool:
     has_value = False
     for v in values:
@@ -36,7 +21,7 @@ def is_numeric_column(values: list[str]) -> bool:
     return has_value
 
 
-# enleve colone non numeric
+# remove non numeric column
 def only_numeric(data: dict[str, list[str]]) -> dict[str, list[float]]:
     result = {}
     for name, values in data.items():
@@ -48,7 +33,6 @@ def only_numeric(data: dict[str, list[str]]) -> dict[str, list[float]]:
     return result
 
 
-# this is the good one
 def import_data(data_train: str) -> dict[str, list[str]]:
     data = read_dataset(data_train)
     remove_useless_data(data)
@@ -120,7 +104,6 @@ def nb_students(data: dict[str, list[str]]) -> int:
 
 
 # get data by branch in numpy
-# for part 1 and 2
 def course_data(data: dict[str, list[str]], branch: str) -> np.ndarray:
     if branch not in data:
         raise KeyError("This course is not in data set")
