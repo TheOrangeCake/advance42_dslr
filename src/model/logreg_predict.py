@@ -43,7 +43,7 @@ def logreg_predict(dataset_path, weights_path="weights.csv"):
         sys.exit(1)
 
     # prepare datas:
-    grades_data = get_grades_data(list_courses, means, stds)
+    grades_data = get_grades_data(dataset_path, list_courses, means, stds)
     nb_stud = grades_data.shape[0]
 
     students_predictions = []
@@ -68,8 +68,8 @@ def logreg_predict(dataset_path, weights_path="weights.csv"):
     return
 
 
-def get_grades_data(list_courses, means, stds) -> np.ndarray:
-    prediction_data = import_data(sys.argv[1])
+def get_grades_data(dataset_path, list_courses, means, stds) -> np.ndarray:
+    prediction_data = import_data(dataset_path)
     try:
         test_courses = get_courses_list(prediction_data)
     except (KeyError, ValueError) as e:
